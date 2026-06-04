@@ -1,0 +1,218 @@
+/*
+===========================================================
+  Underbeach 2026 - Form Page Premium
+===========================================================
+*/
+
+.ub-form-page {
+  position: relative;
+  z-index: 3;
+  width: min(1040px, 100%);
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--white-90);
+  animation: ub-fade-in 0.35s ease-out;
+}
+
+.ub-form-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.ub-form-topbar > span,
+.ub-form-hero p {
+  color: var(--ub-gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ub-form-hero {
+  padding: clamp(1.25rem, 4vw, 2.3rem);
+  margin-bottom: clamp(1rem, 3vw, 1.35rem);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(246, 194, 122, 0.08), rgba(255, 255, 255, 0.035)),
+    rgba(7, 11, 13, 0.58);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-strong);
+}
+
+.ub-form-hero h1,
+.ub-form-success h1 {
+  margin: 0.35rem 0 0;
+  color: #fff;
+  font-size: clamp(2.2rem, 8vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+}
+
+.ub-form-hero span,
+.ub-form-success span {
+  display: block;
+  max-width: 680px;
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: clamp(0.98rem, 2vw, 1.12rem);
+}
+
+.ub-form-panel,
+.ub-form-success {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.035)),
+    rgba(7, 11, 13, 0.64);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-strong);
+}
+
+.ub-form-panel {
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.4rem);
+  padding: clamp(1rem, 3vw, 1.6rem);
+}
+
+.ub-form-panel fieldset {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0 0 clamp(1rem, 3vw, 1.35rem);
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.ub-form-panel fieldset:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.ub-form-panel legend {
+  margin-bottom: 0.9rem;
+  color: var(--ub-gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ub-form-panel label {
+  display: grid;
+  gap: 0.45rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ub-form-panel input {
+  min-height: 3.2rem;
+  width: 100%;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.ub-form-panel input::placeholder {
+  color: rgba(255, 255, 255, 0.36);
+}
+
+.ub-form-panel input:focus {
+  border-color: rgba(246, 194, 122, 0.58);
+  box-shadow:
+    0 0 0 3px rgba(246, 194, 122, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.ub-form-panel input[type="file"] {
+  min-height: auto;
+  padding: 0.85rem;
+}
+
+.ub-form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ub-form-row--three {
+  grid-template-columns: 0.7fr 1.5fr 0.8fr;
+}
+
+.ub-form-error {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(216, 127, 166, 0.28);
+  border-left: 3px solid var(--ub-coral);
+  border-radius: var(--radius-md);
+  background: rgba(216, 127, 166, 0.12);
+  color: #ffdce8;
+  font-weight: 700;
+}
+
+.ub-form-submit {
+  justify-self: start;
+  min-width: min(100%, 320px);
+}
+
+.ub-form-page--success {
+  min-height: calc(100svh - 6rem);
+  display: grid;
+  align-content: center;
+}
+
+.ub-form-success {
+  width: min(620px, 100%);
+  margin: 0 auto;
+  padding: clamp(1.4rem, 5vw, 3rem);
+  text-align: center;
+}
+
+.ub-form-success p {
+  margin: 0;
+  color: var(--ub-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ub-form-success .ub-button {
+  margin-top: 1.6rem;
+}
+
+@media (max-width: 760px) {
+  .ub-form-page {
+    padding: 1rem;
+  }
+
+  .ub-form-topbar {
+    align-items: center;
+  }
+
+  .ub-form-hero,
+  .ub-form-panel {
+    border-radius: var(--radius-md);
+  }
+
+  .ub-form-row,
+  .ub-form-row--three {
+    grid-template-columns: 1fr;
+  }
+
+  .ub-form-submit {
+    width: 100%;
+  }
+}

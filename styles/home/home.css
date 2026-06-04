@@ -1,0 +1,144 @@
+/*
+===========================================================
+  Underbeach 2026 - Home Premium
+===========================================================
+*/
+
+.ub-root:has(.ub-home) {
+  height: 100svh;
+  overflow: hidden;
+}
+
+.ub-root:has(.ub-home) .ub-footer,
+.ub-root:has(.ub-home) .ub-header-invisible {
+  display: none;
+}
+
+.ub-home--premium {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(0.9rem, 3vw, 2.5rem);
+  color: #fff;
+  text-align: center;
+  animation: ub-fade-in 0.35s ease-out;
+}
+
+.ub-home__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+}
+
+.ub-home__topbar > span {
+  color: var(--ub-gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.ub-home__center {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  min-height: 0;
+}
+
+.ub-home__logo {
+  display: block;
+  width: clamp(180px, 28vw, 320px);
+  max-width: 82vw;
+  margin: 0 auto clamp(1.8rem, 4vw, 3rem);
+  filter:
+    drop-shadow(0 16px 36px rgba(0, 0, 0, 0.48))
+    drop-shadow(0 6px 16px rgba(0, 0, 0, 0.38));
+}
+
+.ub-home__slogan {
+  max-width: 760px;
+  margin: 0 auto clamp(2.1rem, 5vw, 3.4rem);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: clamp(1.25rem, 4.2vw, 2.65rem);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.ub-home__cta {
+  width: min(100%, 430px);
+  min-height: 4.1rem;
+  border-radius: var(--radius-lg);
+  font-size: clamp(1.05rem, 2vw, 1.32rem);
+}
+
+.ub-home__microcopy {
+  margin: 1.35rem 0 0;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: clamp(0.82rem, 2vw, 1rem);
+  letter-spacing: 0.03em;
+}
+
+.ub-home__footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 2rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: clamp(0.72rem, 1.7vw, 0.9rem);
+  letter-spacing: 0.04em;
+}
+
+.ub-home__footer a {
+  color: rgba(255, 255, 255, 0.68);
+  text-decoration: none;
+}
+
+.ub-home__footer a:hover {
+  color: #fff;
+}
+
+@keyframes ub-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .ub-home--premium {
+    padding: 0.9rem;
+  }
+
+  .ub-home__topbar {
+    align-items: center;
+  }
+
+  .ub-home__topbar > span {
+    max-width: 12rem;
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+  }
+
+  .ub-home__logo {
+    width: min(68vw, 210px);
+    margin-bottom: 1.8rem;
+  }
+
+  .ub-home__slogan {
+    max-width: 92vw;
+    margin-bottom: 2rem;
+  }
+}

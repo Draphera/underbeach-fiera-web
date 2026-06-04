@@ -1,0 +1,23 @@
+/*
+===========================================================
+  Underbeach 2026 — Typography
+===========================================================
+*/
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--white-90);
+  background: var(--ub-blue-dark);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+p {
+  line-height: 1.55;
+}

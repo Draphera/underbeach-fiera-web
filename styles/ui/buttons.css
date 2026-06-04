@@ -1,0 +1,120 @@
+/*
+===========================================================
+  Underbeach 2026 — Buttons (Luxury Enterprise Edition 2.0)
+  Premium Gold • Soft Motion • Cinematic Shadow
+===========================================================
+*/
+
+/* ---------------------------------------------
+   BASE BUTTON
+--------------------------------------------- */
+
+.ub-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0.9rem 2rem;
+  border-radius: 14px;
+
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease,
+    box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* ---------------------------------------------
+   PRIMARY — Gold CTA (StartButton)
+--------------------------------------------- */
+
+.ub-button--primary {
+  background: linear-gradient(180deg, #ffd79e 0%, #ffc47a 100%);
+  color: var(--ub-blue);
+
+  border: 1px solid rgba(0, 0, 0, 0.12);
+
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+
+.ub-button--primary:hover {
+  background: linear-gradient(180deg, #ffe2b8 0%, #ffcf8d 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+}
+
+.ub-button--primary:active {
+  transform: translateY(0);
+  background: linear-gradient(180deg, #f3b96a 0%, #eaa85a 100%);
+}
+
+.ub-button--primary:focus-visible {
+  outline: 2px solid var(--ub-turquoise);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------
+   SECONDARY — Glass Button
+--------------------------------------------- */
+
+.ub-button--secondary {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--white-90);
+  backdrop-filter: blur(8px);
+}
+
+.ub-button--secondary:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+}
+
+.ub-button--secondary:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------
+   GHOST — Outline Minimal
+--------------------------------------------- */
+
+.ub-button--ghost {
+  background: transparent;
+  border: 1px solid var(--white-12);
+  color: var(--white-90);
+}
+
+.ub-button--ghost:hover {
+  border-color: var(--white-90);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------------------------------------------
+   FULL WIDTH
+--------------------------------------------- */
+
+.ub-button--full {
+  width: 100%;
+}
+
+/* ---------------------------------------------
+   RESPONSIVE — MOBILE
+--------------------------------------------- */
+
+@media (max-width: 600px) {
+  .ub-button {
+    padding: 0.85rem 1.6rem;
+    font-size: 0.95rem;
+  }
+
+  .ub-button--primary {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  }
+}

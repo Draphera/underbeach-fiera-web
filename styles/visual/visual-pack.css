@@ -1,0 +1,170 @@
+/*
+===========================================================
+  Underbeach 2026 — Cinematic Visual Pack (Luxury Edition)
+  Overlay • Vignette • Haze • Fog • Flares • Bloom • Texture
+===========================================================
+*/
+
+.ub-visual-pack,
+.ub-visual-pack span {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ub-visual-pack {
+  z-index: -1;
+  overflow: hidden;
+  mix-blend-mode: normal;
+}
+
+/* ---------------------------------------------
+   OVERLAY — profondità + tonalità calda
+--------------------------------------------- */
+
+.ub-overlay {
+  background: linear-gradient(
+      180deg,
+      rgba(14, 26, 43, 0) 0%,
+      rgba(14, 26, 43, 0.42) 36%,
+      rgba(4, 7, 10, 0.82) 74%,
+      rgba(0, 0, 0, 1) 100%
+    ),
+    radial-gradient(
+      circle at 47% 42%,
+      rgba(232, 226, 216, 0.1),
+      rgba(232, 226, 216, 0) 38%
+    );
+}
+
+/* ---------------------------------------------
+   VIGNETTE — bordi morbidi premium
+--------------------------------------------- */
+
+.ub-vignette {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(232, 154, 90, 0) 0%,
+    rgba(232, 154, 90, 0) 56%,
+    rgba(72, 35, 27, 0.07) 100%
+  );
+}
+
+/* ---------------------------------------------
+   HAZE — bagliore caldo/magenta
+--------------------------------------------- */
+
+.ub-haze {
+  opacity: 0.34;
+  filter: blur(10px);
+  background: radial-gradient(
+      ellipse at 52% 40%,
+      rgba(216, 127, 166, 0.16),
+      rgba(216, 127, 166, 0) 42%
+    ),
+    radial-gradient(
+      ellipse at 68% 26%,
+      rgba(246, 194, 122, 0.14),
+      rgba(246, 194, 122, 0) 36%
+    );
+}
+
+/* ---------------------------------------------
+   FOG — profondità dal basso
+--------------------------------------------- */
+
+.ub-fog {
+  top: auto;
+  height: 38%;
+  opacity: 0.84;
+  filter: blur(24px);
+  background: linear-gradient(
+      180deg,
+      rgba(232, 226, 216, 0) 0%,
+      rgba(14, 26, 43, 0.32) 42%,
+      rgba(0, 0, 0, 0.76) 100%
+    ),
+    radial-gradient(
+      ellipse at 36% 100%,
+      rgba(63, 183, 196, 0.14),
+      rgba(63, 183, 196, 0) 54%
+    );
+}
+
+/* ---------------------------------------------
+   FLARES — streaks cinematografici
+--------------------------------------------- */
+
+.ub-flares {
+  opacity: 0.18;
+  filter: blur(0.4px);
+  background: linear-gradient(
+      92deg,
+      transparent 0%,
+      rgba(246, 194, 122, 0) 45%,
+      rgba(246, 194, 122, 0.24) 50%,
+      rgba(216, 127, 166, 0.12) 54%,
+      transparent 66%
+    ),
+    linear-gradient(
+      91deg,
+      transparent 0%,
+      rgba(246, 194, 122, 0.13) 62%,
+      transparent 76%
+    );
+  transform: translateY(-9%);
+}
+
+/* ---------------------------------------------
+   BLOOM — bagliore morbido
+--------------------------------------------- */
+
+.ub-bloom {
+  opacity: 0.2;
+  filter: blur(24px);
+  background: radial-gradient(
+      ellipse at 74% 52%,
+      rgba(246, 194, 122, 0.24),
+      rgba(246, 194, 122, 0) 22%
+    ),
+    radial-gradient(
+      ellipse at 48% 75%,
+      rgba(63, 183, 196, 0.18),
+      rgba(63, 183, 196, 0) 0%
+    ),
+    radial-gradient(
+      ellipse at 18% 36%,
+      rgba(232, 154, 90, 0.18),
+      rgba(232, 154, 90, 0) 25%
+    );
+}
+
+/* ---------------------------------------------
+   TEXTURE — micro-grana editoriale
+--------------------------------------------- */
+
+.ub-texture {
+  opacity: 0.018;
+  background-image: radial-gradient(
+      circle at 20% 30%,
+      #ffffff 0 0.8px,
+      transparent 1px
+    ),
+    radial-gradient(circle at 75% 62%, #ffffff 0 0.7px, transparent 1px),
+    radial-gradient(circle at 42% 82%, #ffffff 0 0.6px, transparent 1px);
+  background-size: 18px 18px, 23px 23px, 31px 31px;
+}
+
+/* ---------------------------------------------
+   RESPONSIVE
+--------------------------------------------- */
+
+@media (max-width: 760px) {
+  .ub-flares {
+    opacity: 0.34;
+  }
+
+  .ub-fog {
+    height: 46%;
+  }
+}

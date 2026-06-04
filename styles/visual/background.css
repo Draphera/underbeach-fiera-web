@@ -1,0 +1,81 @@
+/*
+===========================================================
+  Underbeach 2026 — Background Engine (Vignette Premium)
+  Clean • Cinematic • Corporate Hero
+===========================================================
+*/
+
+/* ---------------------------------------------
+   LAYER 0 — PHOTO TEXTURE (bg_photo.png)
+--------------------------------------------- */
+
+.ub-bg-photo {
+  position: fixed;
+  inset: 0;
+  background-image: url("/bg_photo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  filter: brightness(0.15) contrast(1.1) saturate(0.8);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .ub-bg-photo {
+    filter: brightness(0.12) contrast(1.05);
+    opacity: 0.25;
+    background-position: center top;
+  }
+}
+
+/* DESKTOP HERO */
+@media (min-width: 1100px) {
+  .ub-bg-photo {
+    opacity: 0.36;
+    filter: brightness(0.18) contrast(1.15);
+  }
+}
+
+/* ---------------------------------------------
+   LAYER 1 — VIGNETTE PREMIUM (Apple-style)
+--------------------------------------------- */
+
+.ub-visual-pack {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 25%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+}
+
+/* MOBILE VIGNETTE */
+@media (max-width: 600px) {
+  .ub-visual-pack {
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 255, 255, 0.015) 20%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+  }
+}
+
+/* ---------------------------------------------
+   LAYER 2 — CONTENT
+--------------------------------------------- */
+
+.ub-home,
+.ub-home--premium {
+  position: relative;
+  z-index: 3;
+}

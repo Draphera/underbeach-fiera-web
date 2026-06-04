@@ -1,0 +1,41 @@
+/*
+===========================================================
+  Underbeach 2026 — Design Tokens
+===========================================================
+*/
+
+:root {
+  /* Brand */
+  --ub-blue: #0a1a2f;
+  --ub-blue-dark: #0e1a2b;
+  --ub-turquoise: #3fb7c4;
+  --ub-gold: #f6c27a;
+  --ub-coral: #d87fa6;
+  --ub-sand: #e8e2d8;
+
+  /* Neutrals */
+  --white-90: rgba(255, 255, 255, 0.9);
+  --white-12: rgba(255, 255, 255, 0.12);
+  --black-40: rgba(0, 0, 0, 0.4);
+
+  /* Glass */
+  --bg-glass: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+
+  /* Shadows */
+  --shadow-strong: 0 8px 24px rgba(0, 0, 0, 0.18);
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  /* Spacing */
+  --space-xs: 6px;
+  --space-sm: 12px;
+  --space-md: 20px;
+  --space-lg: 32px;
+  --space-xl: 48px;
+}
