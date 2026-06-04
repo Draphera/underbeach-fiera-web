@@ -7,19 +7,30 @@ Il progetto utilizza un’architettura completamente serverless basata su Next.j
 Permettere ai negozianti di registrarsi rapidamente tramite QR Code, inviando i dati direttamente al database cloud.  
 La Fase 1 è l’unica parte visibile al pubblico durante la fiera.
 
+## Flusso Utente
+1. Scansione del QR Code allo stand  
+2. Landing page minimal ottimizzata per smartphone  
+3. Selezione lingua  
+4. Form con 4 campi obbligatori  
+5. Invio dati a Supabase tramite API serverless  
+6. Schermata finale di conferma
+
 ## Funzionalità
-- Landing page mobile-first
-- Form con 4 campi obbligatori
-- Validazione client-side
-- Invio dati a Supabase tramite API pubblica
+- Landing page mobile-first (post‑QR)
+- Background engine cinematografico globale
+- Visual Pack separato (overlay, vignette, haze, bloom)
+- Language Switcher con stato persistente
+- Form con validazione client-side
+- Invio dati tramite API pubblica Supabase
 - Antiduplicazione tramite vincolo UNIQUE
 - Schermata finale di conferma
 
 ## Stack Tecnologico
 - Next.js 14 (App Router)
 - React
-- Supabase (Anon Public API)
+- Supabase (PostgreSQL + API)
 - Vercel (Hosting + CDN globale)
+- CSS Modules / Vanilla CSS
 
 ## Database
 Tabella: `lead_fiera`
@@ -27,34 +38,17 @@ Tabella: `lead_fiera`
 Campi principali:
 - ragione_sociale  
 - citta  
-- email  
+- email (UNIQUE)  
 - telefono  
 - privacy_accettata  
-- approvato (default: false)
+- approvato (default: false)  
+- created_at (timestamp)
 
 ## Deploy
 Il deploy avviene automaticamente tramite Vercel collegato al branch `main`.
 
 ## Sviluppo locale
+
 Installazione dipendenze:
-
+```bash
 npm install
-
-Avvio ambiente di sviluppo:
-
-npm run dev
-
-## Struttura del progetto
-app/
-page.tsx
-success.tsx
-api/
-lead/
-route.ts
-public/
-
-
-## Note
-Questo repository contiene esclusivamente la Fase 1.  
-Le fasi successive (Portale Admin, Dashboard Negozi, App Mobile) risiedono in repository separati.
-
