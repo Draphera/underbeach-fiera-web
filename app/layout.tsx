@@ -1,23 +1,25 @@
-import "../styles/globals.css";
+import type { ReactNode } from "react";
+
+import "@/styles/globals.css";
 
 /* CORE */
-import "../styles/core/reset.css";
-import "../styles/core/variables.css";
-import "../styles/core/typography.css";
-import "../styles/core/layout.css";
+import "@/styles/core/reset.css";
+import "@/styles/core/variables.css";
+import "@/styles/core/typography.css";
+import "@/styles/core/layout.css";
 
 /* VISUAL ENGINE */
-import "../styles/visual/background.css";
-import "../styles/visual/visual-pack.css";
+import "@/styles/visual/background.css";
+import "@/styles/visual/visual-pack.css";
 
 /* UI COMPONENTS */
-import "../styles/ui/buttons.css";
-import "../styles/ui/language-switcher.css";
-import "../styles/ui/meta-badges.css";
+import "@/styles/ui/buttons.css";
+import "@/styles/ui/language-switcher.css";
+import "@/styles/ui/meta-badges.css";
 
 /* PAGES */
-import "../styles/dashboard/dashboard.css";
-import "../styles/form/form.css";
+import "@/styles/dashboard/dashboard.css";
+import "@/styles/form/form.css";
 
 export const metadata = {
   title: "Underbeach Fiera",
@@ -27,7 +29,7 @@ export const metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <html lang="it" className="ub-html">
