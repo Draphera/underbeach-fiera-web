@@ -10,24 +10,26 @@
 import LanguageSwitcher from "@/components/ui/language-switcher";
 import StartButton from "@/components/ui/start-button";
 import { copy } from "@/lib/i18n";
+import { getSupabaseClient } from "@/lib/supabase";
 import { useLanguage } from "@/lib/use-language";
-import { createClient } from "@supabase/supabase-js";
-import { useState } from "react";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { useMemo, useState } from "react";
 
 export default function FormPage() {
   const { lang, setLang } = useLanguage();
   const text = copy[lang].form;
+  const supabase = useMemo(() => getSupabaseClient(), []);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!supabase) {
+      setErrorMsg(text.errors.generic);
+      return;
+    }
+
     setLoading(true);
     setErrorMsg(null);
 

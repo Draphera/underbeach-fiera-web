@@ -1,6 +1,6 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -36,6 +36,7 @@ function isMissingActivationColumn(message: string) {
 }
 
 export default function DashboardPage() {
+  const supabase = useMemo(() => getSupabaseClient(), []);
   const [session, setSession] = useState<Session | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -59,6 +60,7 @@ export default function DashboardPage() {
   }
 
   const loadLeads = useCallback(async () => {
+    if (!supabase) return;
     if (loadingRef.current) return;
 
     const { data: sessionData } = await supabase.auth.getSession();
@@ -104,9 +106,14 @@ export default function DashboardPage() {
 
     loadingRef.current = false;
     setLoading(false);
-  }, []);
+  }, [supabase]);
 
   useEffect(() => {
+    if (!supabase) {
+      setAuthLoading(false);
+      return;
+    }
+
     let mounted = true;
 
     supabase.auth.getSession().then(({ data }) => {
@@ -168,6 +175,7 @@ export default function DashboardPage() {
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!supabase) return;
     setAuthError(null);
     setAuthLoading(true);
 
@@ -183,10 +191,16 @@ export default function DashboardPage() {
   }
 
   async function handleLogout() {
+    if (!supabase) return;
     await supabase.auth.signOut();
   }
 
   async function setStoreActive(lead: StoreLead, nextActive: boolean) {
+    if (!supabase) {
+      setError("Configurazione Supabase mancante.");
+      return;
+    }
+
     if (!activationAvailable) {
       setError("La tabella attuale non espone i campi di attivazione.");
       return;
@@ -229,6 +243,18 @@ export default function DashboardPage() {
           <p>Underbeach operator</p>
           <h1>Accesso dashboard</h1>
           <span>Verifica sessione in corso...</span>
+        </section>
+      </main>
+    );
+  }
+
+  if (!supabase) {
+    return (
+      <main className="ub-dashboard ub-dashboard--auth">
+        <section className="ub-dashboard-login">
+          <p>Underbeach operator</p>
+          <h1>Configurazione mancante</h1>
+          <span>Imposta le variabili Supabase su Vercel per usare la dashboard.</span>
         </section>
       </main>
     );
