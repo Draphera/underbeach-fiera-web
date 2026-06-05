@@ -438,6 +438,9 @@ export default function DashboardPage() {
             <button className="ub-dashboard__refresh" onClick={loadLeads} type="button">
               Aggiorna
             </button>
+            <button className="ub-dashboard__refresh" onClick={exportFilteredLeads} type="button">
+              Export CSV
+            </button>
             <button
               className="ub-dashboard__refresh ub-dashboard__refresh--ghost"
               onClick={handleLogout}
@@ -548,7 +551,24 @@ export default function DashboardPage() {
             {loading && <p className="ub-dashboard__empty">Caricamento negozi...</p>}
 
             {!loading && filteredLeads.length === 0 && (
-              <p className="ub-dashboard__empty">Nessun negozio trovato.</p>
+              <div className="ub-dashboard-empty-state">
+                <span aria-hidden="true" />
+                <strong>Nessun negozio trovato</strong>
+                <p>
+                  Modifica ricerca o filtro per visualizzare altri lead. Se sei in demo,
+                  inserisci qualche negozio di prova prima della presentazione.
+                </p>
+                <button
+                  className="ub-dashboard__refresh"
+                  onClick={() => {
+                    setQuery("");
+                    setStatus("all");
+                  }}
+                  type="button"
+                >
+                  Mostra tutti
+                </button>
+              </div>
             )}
 
             {!loading &&

@@ -88,6 +88,7 @@ export default function StoreDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasSession, setHasSession] = useState(false);
+  const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -159,6 +160,18 @@ export default function StoreDetailPage() {
     : "";
   const websiteHref = externalHref(store?.sito_internet);
   const socialHref = externalHref(store?.social);
+  const phoneHref = store?.telefono_negozio ? `tel:${store.telefono_negozio}` : null;
+  const mobileHref = store?.referente_cellulare
+    ? `tel:${store.referente_cellulare}`
+    : null;
+
+  async function copyToClipboard(label: string, value: string | null | undefined) {
+    if (!value) return;
+
+    await navigator.clipboard.writeText(value);
+    setCopiedLabel(label);
+    window.setTimeout(() => setCopiedLabel(null), 1600);
+  }
 
   if (loading) {
     return (
@@ -261,6 +274,53 @@ export default function StoreDetailPage() {
                 .filter(Boolean)
                 .join(", ") || "Indirizzo non indicato"}
             </p>
+
+            <div className="ub-dashboard-detail__actions" aria-label="Azioni rapide">
+              {phoneHref && (
+                <a className="ub-dashboard-detail-action" href={phoneHref}>
+                  Chiama negozio
+                </a>
+              )}
+              {mobileHref && (
+                <a className="ub-dashboard-detail-action" href={mobileHref}>
+                  Chiama referente
+                </a>
+              )}
+              {websiteHref && (
+                <a
+                  className="ub-dashboard-detail-action"
+                  href={websiteHref}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Apri sito
+                </a>
+              )}
+              <button
+                className="ub-dashboard-detail-action ub-dashboard-detail-action--ghost"
+                disabled={!store.partita_iva}
+                onClick={() => copyToClipboard("P.IVA", store.partita_iva)}
+                type="button"
+              >
+                Copia P.IVA
+              </button>
+              <button
+                className="ub-dashboard-detail-action ub-dashboard-detail-action--ghost"
+                disabled={!store.referente_cellulare}
+                onClick={() =>
+                  copyToClipboard("cellulare", store.referente_cellulare)
+                }
+                type="button"
+              >
+                Copia contatto
+              </button>
+            </div>
+
+            {copiedLabel && (
+              <strong className="ub-dashboard-detail__copy-status">
+                {copiedLabel} copiato
+              </strong>
+            )}
           </div>
         </section>
 

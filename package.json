@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "seed:demo": "node scripts/seed-demo-negozi.mjs",
+    "seed:demo:dry": "node scripts/seed-demo-negozi.mjs --dry-run",
+    "seed:demo:status": "node scripts/update-demo-status.mjs",
     "start": "next start"
   },
   "keywords": [],

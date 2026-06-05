@@ -779,6 +779,44 @@
   color: rgba(255, 255, 255, 0.62);
 }
 
+.ub-dashboard-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.8rem;
+  margin: 1rem;
+  border: 1px dashed rgba(246, 194, 122, 0.24);
+  border-radius: 8px;
+  padding: clamp(1.4rem, 4vw, 2rem);
+  background: rgba(246, 194, 122, 0.045);
+  color: rgba(248, 251, 249, 0.68);
+  text-align: center;
+}
+
+.ub-dashboard-empty-state > span {
+  width: 3rem;
+  aspect-ratio: 1;
+  border: 1px solid rgba(246, 194, 122, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(246, 194, 122, 0.18), rgba(63, 183, 196, 0.1)),
+    rgba(255, 255, 255, 0.04);
+}
+
+.ub-dashboard-empty-state strong {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.ub-dashboard-empty-state p {
+  max-width: 520px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.ub-dashboard-empty-state .ub-dashboard__refresh {
+  margin-top: 0.25rem;
+}
+
 .ub-dashboard-detail {
   grid-template-rows: auto auto minmax(0, 1fr);
 }
@@ -848,6 +886,62 @@
   margin: 0.75rem 0 0;
   color: rgba(248, 251, 249, 0.68);
   line-height: 1.5;
+}
+
+.ub-dashboard-detail__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.1rem;
+}
+
+.ub-dashboard-detail-action {
+  display: inline-flex;
+  min-height: 2.45rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(246, 194, 122, 0.22);
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  background: linear-gradient(180deg, #ffd79e 0%, #ffc47a 100%);
+  color: var(--ub-blue);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.ub-dashboard-detail-action:hover {
+  background: linear-gradient(180deg, #ffe2b8 0%, #ffcf8d 100%);
+}
+
+.ub-dashboard-detail-action--ghost {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.ub-dashboard-detail-action--ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.ub-dashboard-detail-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ub-dashboard-detail__copy-status {
+  display: inline-flex;
+  margin-top: 0.75rem;
+  border: 1px solid rgba(63, 183, 196, 0.34);
+  border-radius: 999px;
+  padding: 0.35rem 0.65rem;
+  background: rgba(63, 183, 196, 0.12);
+  color: #aaf4f8;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
 }
 
 .ub-dashboard-detail__grid {

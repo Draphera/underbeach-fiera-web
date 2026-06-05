@@ -100,6 +100,42 @@ Avvio dopo build:
 npm run start
 ```
 
+## Dati demo
+
+Per la presentazione sono disponibili 8 negozi demo realistici in:
+
+```txt
+data/demo-negozi.csv
+```
+
+Controllo senza scrivere su Supabase:
+
+```bash
+npm run seed:demo:dry
+```
+
+Inserimento su Supabase usando `.env.local`:
+
+```bash
+npm run seed:demo
+```
+
+Lo script prova a inserire anche i campi `attivo` e `attivato_at`; se non sono disponibili nella tabella, ritenta automaticamente con i soli campi base.
+
+Per abilitare la vista attivazioni nella dashboard, eseguire nel SQL Editor di Supabase:
+
+```txt
+supabase/add-activation-columns.sql
+```
+
+Dopo aver aggiunto le colonne, aggiornare gli stati dei negozi demo:
+
+```bash
+npm run seed:demo:status
+```
+
+Se Supabase blocca l'update da client anon con le policy RLS, non e' un errore del progetto: il file SQL sopra contiene gia' gli update degli stati demo e va eseguito dal SQL Editor.
+
 ## Database Supabase
 
 La dashboard e il form usano la tabella `negozi`.

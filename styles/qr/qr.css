@@ -1,0 +1,136 @@
+/*
+===========================================================
+  Underbeach 2026 - QR Demo Page
+===========================================================
+*/
+
+.ub-root:has(.ub-qr-page) .ub-footer,
+.ub-root:has(.ub-qr-page) .ub-header-invisible {
+  display: none;
+}
+
+.ub-qr-page {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  min-height: 100svh;
+  place-items: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--white-90);
+}
+
+.ub-qr-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 0.72fr);
+  gap: clamp(1.4rem, 4vw, 3rem);
+  align-items: center;
+  width: min(1180px, 100%);
+}
+
+.ub-qr-copy {
+  display: grid;
+  gap: 1rem;
+}
+
+.ub-qr-copy span {
+  color: var(--ub-gold);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.ub-qr-copy h1 {
+  max-width: 780px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2.6rem, 7vw, 5.8rem);
+  line-height: 0.95;
+}
+
+.ub-qr-copy p {
+  max-width: 660px;
+  margin: 0;
+  color: rgba(248, 251, 249, 0.68);
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  line-height: 1.6;
+}
+
+.ub-qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.ub-qr-link {
+  display: inline-flex;
+  min-height: 2.8rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(246, 194, 122, 0.22);
+  border-radius: 8px;
+  padding: 0 1rem;
+  background: linear-gradient(180deg, #ffd79e 0%, #ffc47a 100%);
+  color: var(--ub-blue);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.ub-qr-link--ghost {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.ub-qr-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background:
+    linear-gradient(180deg, rgba(246, 194, 122, 0.075), rgba(63, 183, 196, 0.035)),
+    rgba(5, 12, 17, 0.78);
+  box-shadow: var(--shadow-strong);
+}
+
+.ub-qr-card img {
+  width: min(52vh, 440px, 100%);
+  aspect-ratio: 1;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.ub-qr-card strong {
+  color: #fff;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.ub-qr-card span {
+  color: rgba(248, 251, 249, 0.58);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .ub-qr-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .ub-qr-copy {
+    text-align: center;
+  }
+
+  .ub-qr-actions {
+    justify-content: center;
+  }
+
+  .ub-qr-card img {
+    width: min(76vw, 420px);
+  }
+}

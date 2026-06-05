@@ -20,6 +20,7 @@ import "@/styles/ui/meta-badges.css";
 /* PAGES */
 import "@/styles/dashboard/dashboard.css";
 import "@/styles/form/form.css";
+import "@/styles/qr/qr.css";
 
 export const metadata = {
   title: "Underbeach Fiera",

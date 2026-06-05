@@ -1,0 +1,9 @@
+ragione_sociale,indirizzo,cap,citta,provincia,telefono_negozio,partita_iva,referente_nome,referente_cognome,referente_cellulare,sito_internet,social,logo_url,created_at,attivo,attivato_at
+Riviera Swim Lab,Viale Regina Elena 42,47921,Rimini,RN,0541182044,04123890401,Giulia,Marini,3491182044,rivieraswimlab.it,instagram.com/rivieraswimlab,,2026-06-05T08:10:00.000Z,true,2026-06-05T08:45:00.000Z
+Onda Blu Beachwear,Via Roma 18,47841,Cattolica,RN,0541962240,03988260408,Marco,Valentini,3475521988,ondablubeachwear.it,instagram.com/ondablu_store,,2026-06-05T08:22:00.000Z,false,
+Coral Bay Store,Via Dante 77,47042,Cesenatico,FC,0547671182,04590170403,Elena,Fabbri,3338104412,coralbaystore.it,facebook.com/coralbaystore,,2026-06-05T08:35:00.000Z,true,2026-06-05T09:05:00.000Z
+Sale e Sole Boutique,Piazza Matteotti 5,48015,Cervia,RA,0544972011,02765070398,Andrea,Ricci,3389027115,salesoleboutique.it,instagram.com/salesoleboutique,,2026-06-05T08:48:00.000Z,false,
+Mediterranea Moda Mare,Via Partenope 31,80121,Napoli,NA,081412908,06641891218,Francesca,Esposito,3669142088,mediterraneamodamare.it,instagram.com/mediterraneamare,,2026-06-05T09:04:00.000Z,false,
+Costa Viva Concept Store,Lungomare Trieste 94,84123,Salerno,SA,089225174,05824410658,Luca,De Santis,3397742081,costavivastore.it,facebook.com/costavivaconcept,,2026-06-05T09:17:00.000Z,true,2026-06-05T09:42:00.000Z
+Isola Beach Atelier,Via Vittorio Emanuele 120,90133,Palermo,PA,091551204,07190350821,Marta,Greco,3284479012,isolabeachatelier.it,instagram.com/isolabeachatelier,,2026-06-05T09:31:00.000Z,false,
+Laguna Resort Shop,Fondamenta Nuove 12,30121,Venezia,VE,041720318,04421020270,Paolo,Moretti,3482207318,lagunaresortshop.it,instagram.com/lagunaresortshop,,2026-06-05T09:46:00.000Z,true,2026-06-05T10:03:00.000Z
