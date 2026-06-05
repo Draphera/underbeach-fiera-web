@@ -2,12 +2,15 @@
 
 import { getSupabaseClient } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
+import Link from "next/link";
 import type { FormEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type StoreLead = {
   id: string | number;
   ragione_sociale: string | null;
+  indirizzo: string | null;
+  cap: string | null;
   citta: string | null;
   provincia: string | null;
   telefono_negozio: string | null;
@@ -26,7 +29,7 @@ type StoreLead = {
 type StatusFilter = "all" | "pending" | "active";
 
 const BASE_SELECT =
-  "id, ragione_sociale, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, created_at";
+  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, created_at";
 
 const ACTIVATION_SELECT = `${BASE_SELECT}, attivo, attivato_at`;
 
@@ -173,6 +176,66 @@ export default function DashboardPage() {
     return new Date(lead.created_at).toDateString() === new Date().toDateString();
   }).length;
 
+  function scrollToDashboardSection(sectionId: string) {
+    document.getElementById(sectionId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  function showPendingLeads() {
+    if (activationAvailable) {
+      setStatus("pending");
+    }
+    scrollToDashboardSection("dashboard-stores");
+  }
+
+  function escapeCsvValue(value: string | number | boolean | null | undefined) {
+    const normalized = value === null || value === undefined ? "" : String(value);
+    return `"${normalized.replace(/"/g, '""')}"`;
+  }
+
+  function exportFilteredLeads() {
+    if (filteredLeads.length === 0) {
+      setError("Nessun negozio da esportare con i filtri attuali.");
+      return;
+    }
+
+    const headers = [
+      "ragione_sociale",
+      "indirizzo",
+      "cap",
+      "citta",
+      "provincia",
+      "telefono_negozio",
+      "partita_iva",
+      "referente_nome",
+      "referente_cognome",
+      "referente_cellulare",
+      "sito_internet",
+      "social",
+      "logo_url",
+      "created_at",
+      "attivo",
+      "attivato_at",
+    ];
+
+    const rows = filteredLeads.map((lead) =>
+      headers
+        .map((header) => escapeCsvValue(lead[header as keyof StoreLead]))
+        .join(",")
+    );
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = `underbeach-negozi-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!supabase) return;
@@ -303,21 +366,63 @@ export default function DashboardPage() {
   return (
     <main className="ub-dashboard" aria-label="Underbeach dashboard">
       <aside className="ub-dashboard__sidebar" aria-label="Dashboard sidebar">
-        <div className="ub-dashboard__rail">
-          <span className="ub-dashboard-icon ub-dashboard-icon--active" />
-          <span className="ub-dashboard-icon" />
-          <span className="ub-dashboard-icon" />
-          <span className="ub-dashboard-icon" />
+        <div className="ub-dashboard__brand">
+          <span className="ub-dashboard__brand-mark">UB</span>
+          <div>
+            <strong>Underbeach</strong>
+            <small>Fiera CRM</small>
+          </div>
         </div>
 
         <div className="ub-dashboard__nav">
-          <div className="ub-dashboard__mark" />
-          <nav>
-            <span>Overview</span>
-            <span>Negozi</span>
-            <span>Attivazioni</span>
-            <span>Export</span>
+          <span className="ub-dashboard__nav-label">Workspace</span>
+          <nav aria-label="Dashboard navigation">
+            <button
+              className="ub-dashboard__nav-item ub-dashboard__nav-item--active"
+              onClick={() => scrollToDashboardSection("dashboard-overview")}
+              type="button"
+            >
+              <span className="ub-dashboard-icon ub-dashboard-icon--overview" aria-hidden="true" />
+              <span>Overview</span>
+              <small>{leads.length}</small>
+            </button>
+            <button
+              className="ub-dashboard__nav-item"
+              onClick={() => {
+                setStatus("all");
+                scrollToDashboardSection("dashboard-stores");
+              }}
+              type="button"
+            >
+              <span className="ub-dashboard-icon ub-dashboard-icon--stores" aria-hidden="true" />
+              <span>Negozi</span>
+              <small>{filteredLeads.length}</small>
+            </button>
+            <button
+              className="ub-dashboard__nav-item"
+              disabled={!activationAvailable}
+              onClick={showPendingLeads}
+              type="button"
+            >
+              <span className="ub-dashboard-icon ub-dashboard-icon--activation" aria-hidden="true" />
+              <span>Attivazioni</span>
+              <small>{activationAvailable ? pendingCount : "-"}</small>
+            </button>
+            <button
+              className="ub-dashboard__nav-item"
+              onClick={exportFilteredLeads}
+              type="button"
+            >
+              <span className="ub-dashboard-icon ub-dashboard-icon--export" aria-hidden="true" />
+              <span>Export CSV</span>
+              <small>CSV</small>
+            </button>
           </nav>
+        </div>
+
+        <div className="ub-dashboard__sidebar-footer">
+          <span>Sessione operatore</span>
+          <strong>{session.user.email}</strong>
         </div>
       </aside>
 
@@ -328,6 +433,7 @@ export default function DashboardPage() {
             <h1>{activationAvailable ? "Attivazione negozi" : "Negozi registrati"}</h1>
           </div>
           <div className="ub-dashboard__account">
+            <span className="ub-dashboard__live">Live</span>
             <small>{session.user.email}</small>
             <button className="ub-dashboard__refresh" onClick={loadLeads} type="button">
               Aggiorna
@@ -342,18 +448,22 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        <section className="ub-dashboard__stats" aria-label="Statistiche negozi">
-          <article className="ub-dashboard-card">
+        <section
+          className="ub-dashboard__stats"
+          id="dashboard-overview"
+          aria-label="Statistiche negozi"
+        >
+          <article className="ub-dashboard-card ub-dashboard-card--total">
             <strong>{leads.length}</strong>
             <span>Lead totali</span>
           </article>
           {activationAvailable ? (
             <>
-              <article className="ub-dashboard-card">
+              <article className="ub-dashboard-card ub-dashboard-card--active">
                 <strong>{activeCount}</strong>
                 <span>Negozi attivi</span>
               </article>
-              <article className="ub-dashboard-card">
+              <article className="ub-dashboard-card ub-dashboard-card--pending">
                 <strong>{pendingCount}</strong>
                 <span>Da attivare</span>
               </article>
@@ -370,13 +480,29 @@ export default function DashboardPage() {
               </article>
             </>
           )}
-          <article className="ub-dashboard-card">
+          <article className="ub-dashboard-card ub-dashboard-card--today">
             <strong>{todayCount}</strong>
             <span>Nuovi oggi</span>
           </article>
         </section>
 
-        <section className="ub-dashboard__table-panel" aria-label="Tabella negozi">
+        <section
+          className="ub-dashboard__table-panel"
+          id="dashboard-stores"
+          aria-label="Tabella negozi"
+        >
+          <div className="ub-dashboard__table-header">
+            <div>
+              <span>Archivio lead</span>
+              <h2>{filteredLeads.length} risultati</h2>
+            </div>
+            <p>
+              {activationAvailable
+                ? "Vista operativa per controllo e attivazione negozi."
+                : "Vista in sola lettura: campi di attivazione non disponibili."}
+            </p>
+          </div>
+
           <div className="ub-dashboard__tools">
             <input
               className="ub-dashboard__search"
@@ -434,13 +560,17 @@ export default function DashboardPage() {
 
                 return (
                   <div className="ub-dashboard-table__row" key={lead.id}>
-                    <span>
+                    <Link
+                      className="ub-dashboard-table__shop"
+                      href={`/dashboard/${lead.id}`}
+                    >
                       <strong>{lead.ragione_sociale || "Senza nome"}</strong>
                       <small>
                         {[lead.citta, lead.provincia].filter(Boolean).join(" - ") ||
                           "Località non indicata"}
                       </small>
-                    </span>
+                      <em>Apri scheda</em>
+                    </Link>
 
                     <span>
                       <strong>{referente || "Non indicato"}</strong>
