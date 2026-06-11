@@ -154,6 +154,14 @@ Prima di pubblicare l'aggiornamento email/privacy, eseguire nel SQL Editor:
 supabase/add-registration-email-privacy.sql
 ```
 
+Se le colonne sono gia' state create ma il form restituisce `403 permission denied`, eseguire:
+
+```txt
+supabase/fix-public-registration-policy.sql
+```
+
+La policy consente ai visitatori solo l'inserimento di una nuova registrazione con consenso privacy. Non concede lettura, modifica, cancellazione o attivazione dei negozi.
+
 Campi principali attesi:
 
 - `id`

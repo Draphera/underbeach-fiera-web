@@ -144,8 +144,19 @@ export default function FormPage() {
     const { error } = await supabase.from("negozi").insert(payload);
 
     if (error) {
-      console.error(error);
-      setErrorMsg(text.errors.generic);
+      console.error("Supabase registration error", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+      const isPermissionError =
+        error.code === "42501" ||
+        error.message.toLowerCase().includes("permission denied") ||
+        error.message.toLowerCase().includes("row-level security");
+      setErrorMsg(
+        isPermissionError ? text.errors.registrationPermission : text.errors.generic
+      );
       setLoading(false);
       return;
     }
@@ -210,7 +221,14 @@ export default function FormPage() {
         </div>
       </section>
 
-      <form className="ub-form-panel" onSubmit={handleSubmit}>
+      <form
+        className="ub-form-panel"
+        onReset={() => {
+          setErrorMsg(null);
+          setEmailSent(true);
+        }}
+        onSubmit={handleSubmit}
+      >
         <fieldset>
           <legend>{text.storeData}</legend>
 
@@ -295,18 +313,31 @@ export default function FormPage() {
             {text.logo}
             <input type="file" name="logo" accept="image/png,image/jpeg" />
           </label>
-        </fieldset>
 
-        <label className="ub-form-consent">
-          <input type="checkbox" name="privacy_accettata" required />
-          <span>{text.privacyConsent}</span>
-        </label>
+          <div className="ub-form-privacy">
+            <strong>{text.privacySection}</strong>
+            <label className="ub-form-consent">
+              <input type="checkbox" name="privacy_accettata" required />
+              <span>{text.privacyConsent}</span>
+            </label>
+            <p>{text.privacyRequired}</p>
+          </div>
+        </fieldset>
 
         {errorMsg && <p className="ub-form-error">{errorMsg}</p>}
 
-        <StartButton className="ub-form-submit" type="submit" disabled={loading}>
-          {loading ? text.sending : text.submit}
-        </StartButton>
+        <div className="ub-form-actions">
+          <button
+            className="ub-button ub-button--secondary ub-form-cancel"
+            disabled={loading}
+            type="reset"
+          >
+            {text.cancel}
+          </button>
+          <StartButton className="ub-form-submit" type="submit" disabled={loading}>
+            {loading ? text.sending : text.submit}
+          </StartButton>
+        </div>
       </form>
     </main>
   );

@@ -153,9 +153,28 @@
   text-transform: none;
 }
 
+.ub-form-privacy {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.25rem;
+  border: 1px solid rgba(246, 194, 122, 0.26);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(246, 194, 122, 0.045);
+}
+
+.ub-form-privacy > strong {
+  margin: 0;
+  color: var(--ub-gold);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .ub-form-consent input[type="checkbox"] {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.35rem;
+  height: 1.35rem;
   min-height: 0;
   margin: 0.15rem 0 0;
   padding: 0;
@@ -169,6 +188,13 @@
   font-weight: 600;
   letter-spacing: 0;
   line-height: 1.55;
+}
+
+.ub-form-privacy > p {
+  margin: 0 0 0 2.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 
 .ub-form-row {
@@ -193,8 +219,18 @@
 }
 
 .ub-form-submit {
-  justify-self: start;
   min-width: min(100%, 320px);
+}
+
+.ub-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.ub-form-cancel {
+  min-width: 140px;
 }
 
 .ub-form-page--success {
@@ -243,6 +279,14 @@
   }
 
   .ub-form-submit {
+    width: 100%;
+  }
+
+  .ub-form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .ub-form-cancel {
     width: 100%;
   }
 }
