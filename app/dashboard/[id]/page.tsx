@@ -17,19 +17,22 @@ type StoreDetail = {
   referente_nome: string | null;
   referente_cognome: string | null;
   referente_cellulare: string | null;
+  email: string | null;
   sito_internet: string | null;
   social: string | null;
   logo_url: string | null;
   created_at: string | null;
+  privacy_accettata?: boolean | null;
+  privacy_accettata_at?: string | null;
   attivo?: boolean | null;
   attivato_at?: string | null;
 };
 
 const DETAIL_SELECT =
-  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, created_at, attivo, attivato_at";
+  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, email, sito_internet, social, logo_url, created_at, privacy_accettata, privacy_accettata_at, attivo, attivato_at";
 
 const FALLBACK_SELECT =
-  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, created_at";
+  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, email, sito_internet, social, logo_url, created_at, privacy_accettata, privacy_accettata_at";
 
 function isMissingActivationColumn(message: string) {
   const normalized = message.toLowerCase();
@@ -346,6 +349,11 @@ export default function StoreDetailPage() {
             <DetailItem label="Nome referente" value={referente} />
             <DetailItem label="Telefono negozio" value={store.telefono_negozio} />
             <DetailItem label="Cellulare referente" value={store.referente_cellulare} />
+            <DetailItem
+              label="Email referente"
+              value={store.email}
+              href={store.email ? `mailto:${store.email}` : null}
+            />
             <DetailItem label="Sito internet" value={store.sito_internet} href={websiteHref} />
             <DetailItem label="Social" value={store.social} href={socialHref} />
           </div>
@@ -359,6 +367,11 @@ export default function StoreDetailPage() {
             <DetailItem label="Registrato il" value={formatDate(store.created_at)} />
             <DetailItem label="Attivo" value={store.attivo} />
             <DetailItem label="Attivato il" value={formatDate(store.attivato_at)} />
+            <DetailItem label="Privacy accettata" value={store.privacy_accettata} />
+            <DetailItem
+              label="Consenso privacy il"
+              value={formatDate(store.privacy_accettata_at)}
+            />
             <DetailItem label="Logo URL" value={store.logo_url} href={store.logo_url} />
           </div>
         </section>

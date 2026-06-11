@@ -18,6 +18,7 @@ type StoreLead = {
   referente_nome: string | null;
   referente_cognome: string | null;
   referente_cellulare: string | null;
+  email: string | null;
   sito_internet: string | null;
   social: string | null;
   logo_url: string | null;
@@ -29,7 +30,7 @@ type StoreLead = {
 type StatusFilter = "all" | "pending" | "active";
 
 const BASE_SELECT =
-  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, created_at";
+  "id, ragione_sociale, indirizzo, cap, citta, provincia, telefono_negozio, partita_iva, referente_nome, referente_cognome, referente_cellulare, email, sito_internet, social, logo_url, created_at";
 
 const ACTIVATION_SELECT = `${BASE_SELECT}, attivo, attivato_at`;
 
@@ -159,6 +160,7 @@ export default function DashboardPage() {
         lead.provincia,
         lead.referente_nome,
         lead.referente_cognome,
+        lead.email,
         lead.partita_iva,
       ]
         .filter(Boolean)
@@ -212,6 +214,7 @@ export default function DashboardPage() {
       "referente_nome",
       "referente_cognome",
       "referente_cellulare",
+      "email",
       "sito_internet",
       "social",
       "logo_url",

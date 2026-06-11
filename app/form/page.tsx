@@ -20,6 +20,7 @@ export default function FormPage() {
   const supabase = useMemo(() => getSupabaseClient(), []);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [emailSent, setEmailSent] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -49,8 +50,10 @@ export default function FormPage() {
     const referente_cellulare = String(
       form.get("referente_cellulare") || ""
     ).trim();
+    const email = String(form.get("email") || "").trim().toLowerCase();
     const sito_web = String(form.get("sito_web") || "").trim();
     const social = String(form.get("social") || "").trim();
+    const privacy_accettata = form.get("privacy_accettata") === "on";
 
     if (!/^\d{5}$/.test(cap)) {
       setErrorMsg(text.errors.zip);
@@ -72,6 +75,18 @@ export default function FormPage() {
 
     if (!/^\d{8,}$/.test(referente_cellulare)) {
       setErrorMsg(text.errors.mobile);
+      setLoading(false);
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setErrorMsg(text.errors.email);
+      setLoading(false);
+      return;
+    }
+
+    if (!privacy_accettata) {
+      setErrorMsg(text.errors.privacy);
       setLoading(false);
       return;
     }
@@ -105,6 +120,7 @@ export default function FormPage() {
       }
     }
 
+    const created_at = new Date().toISOString();
     const payload = {
       ragione_sociale,
       indirizzo,
@@ -116,22 +132,46 @@ export default function FormPage() {
       referente_nome,
       referente_cognome,
       referente_cellulare,
+      email,
       sito_internet: sito_web,
       social,
       logo_url,
-      created_at: new Date().toISOString(),
+      privacy_accettata,
+      privacy_accettata_at: created_at,
+      created_at,
     };
 
     const { error } = await supabase.from("negozi").insert(payload);
 
-    setLoading(false);
-
     if (error) {
       console.error(error);
       setErrorMsg(text.errors.generic);
+      setLoading(false);
       return;
     }
 
+    try {
+      const emailResponse = await fetch("/api/registration-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          referenteNome: referente_nome,
+          ragioneSociale: ragione_sociale,
+          partitaIva: partita_iva,
+          createdAt: created_at,
+          registrationId: `${partita_iva}-${created_at}`,
+          lang,
+        }),
+      });
+
+      setEmailSent(emailResponse.ok);
+    } catch (emailError) {
+      console.error("Registration email failed", emailError);
+      setEmailSent(false);
+    }
+
+    setLoading(false);
     setDone(true);
   }
 
@@ -146,7 +186,7 @@ export default function FormPage() {
         <section className="ub-form-success">
           <p>{text.successEyebrow}</p>
           <h1>{text.successTitle}</h1>
-          <span>{text.successText}</span>
+          <span>{emailSent ? text.successText : text.successEmailPending}</span>
           <a className="ub-button ub-button--primary" href="/">
             {text.backHome}
           </a>
@@ -234,6 +274,11 @@ export default function FormPage() {
             <input name="referente_cellulare" inputMode="tel" required />
           </label>
 
+          <label>
+            {text.email}
+            <input name="email" type="email" autoComplete="email" required />
+          </label>
+
           <div className="ub-form-row">
             <label>
               {text.website}
@@ -251,6 +296,11 @@ export default function FormPage() {
             <input type="file" name="logo" accept="image/png,image/jpeg" />
           </label>
         </fieldset>
+
+        <label className="ub-form-consent">
+          <input type="checkbox" name="privacy_accettata" required />
+          <span>{text.privacyConsent}</span>
+        </label>
 
         {errorMsg && <p className="ub-form-error">{errorMsg}</p>}
 

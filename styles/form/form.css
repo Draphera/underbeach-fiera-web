@@ -141,6 +141,36 @@
   padding: 0.85rem;
 }
 
+.ub-form-consent {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  border: 1px solid rgba(246, 194, 122, 0.18);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(246, 194, 122, 0.06);
+  cursor: pointer;
+  text-transform: none;
+}
+
+.ub-form-consent input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  min-height: 0;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  accent-color: var(--ub-gold);
+  cursor: pointer;
+}
+
+.ub-form-consent span {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
 .ub-form-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

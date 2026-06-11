@@ -59,14 +59,22 @@ Creare un file `.env.local` in sviluppo locale:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+RESEND_API_KEY=re_your_resend_api_key
+RESEND_FROM_EMAIL=Underbeach <registrazioni@your-verified-domain.com>
 ```
 
 Le stesse variabili devono essere configurate anche su Vercel:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
 
-Senza queste variabili il build non deve rompersi, ma form e dashboard non possono comunicare con Supabase.
+`SUPABASE_SERVICE_ROLE_KEY` e le variabili Resend non devono avere il prefisso `NEXT_PUBLIC_`: vengono usate solo dalla route server-side. La service role verifica che la richiesta email corrisponda a una registrazione realmente salvata; non deve mai essere esposta nel browser. Il dominio del mittente configurato in `RESEND_FROM_EMAIL` deve essere verificato su Resend.
+
+Senza le variabili Supabase form e dashboard non possono comunicare con il database. Senza le variabili Resend la registrazione viene salvata, ma la schermata finale segnala che la mail di conferma non e' stata inviata.
 
 ## Setup locale
 
@@ -140,6 +148,12 @@ Se Supabase blocca l'update da client anon con le policy RLS, non e' un errore d
 
 La dashboard e il form usano la tabella `negozi`.
 
+Prima di pubblicare l'aggiornamento email/privacy, eseguire nel SQL Editor:
+
+```txt
+supabase/add-registration-email-privacy.sql
+```
+
 Campi principali attesi:
 
 - `id`
@@ -153,10 +167,13 @@ Campi principali attesi:
 - `referente_nome`
 - `referente_cognome`
 - `referente_cellulare`
+- `email`
 - `sito_internet`
 - `social`
 - `logo_url`
 - `created_at`
+- `privacy_accettata`
+- `privacy_accettata_at`
 
 Campi opzionali per l'attivazione dalla dashboard:
 
