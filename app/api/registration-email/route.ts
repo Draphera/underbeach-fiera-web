@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { EMAIL_BRAND_TEXT, emailBrandFooter } from "@/lib/server/email-brand";
 
 type RegistrationEmailRequest = {
   email?: string;
@@ -31,7 +32,7 @@ function emailContent({
   if (lang === "en") {
     return {
       subject: "Underbeach registration received",
-      text: `Hello ${firstName}, we have received the registration for ${businessName}. The Underbeach team will now manually review the request. You will receive a further update after the activation evaluation.`,
+      text: `Hello ${firstName}, we have received the registration for ${businessName}. The Underbeach team will now manually review the request. You will receive a further update after the activation evaluation.\n\n${EMAIL_BRAND_TEXT}`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#0a1a2f;line-height:1.6">
           <p style="color:#b8792f;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Underbeach registration</p>
@@ -43,6 +44,7 @@ function emailContent({
             <strong>Current status:</strong> registration received, activation pending review.
           </div>
           <p style="margin-top:30px;color:#64707a;font-size:13px">Underbeach / Maredamare 2026</p>
+          ${emailBrandFooter()}
         </div>
       `,
     };
@@ -50,7 +52,7 @@ function emailContent({
 
   return {
     subject: "Registrazione Underbeach ricevuta",
-    text: `Ciao ${firstName}, abbiamo ricevuto la registrazione per ${businessName}. Il team Underbeach prendera' ora in carico la richiesta e procedera' con la valutazione manuale per l'attivazione. Riceverai un ulteriore aggiornamento al termine della valutazione.`,
+    text: `Ciao ${firstName}, abbiamo ricevuto la registrazione per ${businessName}. Il team Underbeach prendera' ora in carico la richiesta e procedera' con la valutazione manuale per l'attivazione. Riceverai un ulteriore aggiornamento al termine della valutazione.\n\n${EMAIL_BRAND_TEXT}`,
     html: `
       <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#0a1a2f;line-height:1.6">
         <p style="color:#b8792f;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Registrazione Underbeach</p>
@@ -62,6 +64,7 @@ function emailContent({
           <strong>Stato attuale:</strong> registrazione ricevuta, attivazione in valutazione.
         </div>
         <p style="margin-top:30px;color:#64707a;font-size:13px">Underbeach / Maredamare 2026</p>
+        ${emailBrandFooter()}
       </div>
     `,
   };
@@ -74,8 +77,17 @@ export async function POST(request: Request) {
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!apiKey || !from || !supabaseUrl || !serviceRoleKey) {
+    console.error("Registration email configuration missing", {
+      resendApiKey: Boolean(apiKey),
+      resendFromEmail: Boolean(from),
+      supabaseUrl: Boolean(supabaseUrl),
+      supabaseServiceRoleKey: Boolean(serviceRoleKey),
+    });
     return NextResponse.json(
-      { error: "Email service is not configured." },
+      {
+        code: "EMAIL_SERVICE_NOT_CONFIGURED",
+        error: "Email service is not configured.",
+      },
       { status: 503 }
     );
   }
@@ -120,7 +132,10 @@ export async function POST(request: Request) {
   if (registrationError || !registration) {
     console.error("Registration verification failed", registrationError);
     return NextResponse.json(
-      { error: "Registration could not be verified." },
+      {
+        code: "REGISTRATION_VERIFICATION_FAILED",
+        error: "Registration could not be verified.",
+      },
       { status: 403 }
     );
   }
@@ -151,7 +166,14 @@ export async function POST(request: Request) {
   if (!resendResponse.ok) {
     console.error("Resend email error", responseBody);
     return NextResponse.json(
-      { error: "Confirmation email could not be sent." },
+      {
+        code: "RESEND_DELIVERY_REJECTED",
+        error: "Confirmation email could not be sent.",
+        providerMessage:
+          typeof responseBody?.message === "string"
+            ? responseBody.message
+            : undefined,
+      },
       { status: 502 }
     );
   }

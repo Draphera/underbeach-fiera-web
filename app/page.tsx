@@ -38,19 +38,6 @@ export default function Page() {
         </p>
       </section>
 
-      <footer className="ub-home__footer">
-        <a href="https://underbeach.eu" target="_blank">
-          Underbeach
-        </a>
-        <span>-</span>
-        <a href="https://draphera.com" target="_blank">
-          Draphera
-        </a>
-        <span>-</span>
-        <a href="https://pro2dev.com" target="_blank">
-          pro2dev
-        </a>
-      </footer>
     </main>
   );
 }

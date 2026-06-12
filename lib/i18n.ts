@@ -11,7 +11,7 @@ export const copy = {
       eyebrow: "underbeach.eu / maredamare",
       title: "Underbeach",
       slogan:
-        "L'infrastruttura che standardizza, qualifica e attiva il retail balneare.",
+        "Creare e gestire la relazione con i propri clienti non è mai stato così semplice",
       lead:
         "La piattaforma enterprise per acquisire, qualificare e attivare punti vendita balneari durante Maredamare.",
       meta: ["Maredamare", "Underbeach.eu", "Retail balneare"],
@@ -80,7 +80,7 @@ export const copy = {
       eyebrow: "underbeach.eu / maredamare",
       title: "Underbeach",
       slogan:
-        "The infrastructure that standardizes, qualifies and activates beach retail.",
+        "Building and managing relationships with your customers has never been easier",
       lead:
         "The enterprise platform to acquire, qualify and activate beach retail partners during Maredamare.",
       meta: ["Maredamare", "Underbeach.eu", "Beach retail"],

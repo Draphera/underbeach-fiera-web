@@ -5,11 +5,11 @@
 */
 
 .ub-root:has(.ub-home) {
-  height: 100svh;
-  overflow: hidden;
+  min-height: 100svh;
+  height: auto;
+  overflow-x: hidden;
 }
 
-.ub-root:has(.ub-home) .ub-footer,
 .ub-root:has(.ub-home) .ub-header-invisible {
   display: none;
 }
@@ -20,7 +20,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   width: 100%;
-  min-height: 100svh;
+  min-height: calc(100svh - 118px);
   padding: clamp(0.9rem, 3vw, 2.5rem);
   color: #fff;
   text-align: center;

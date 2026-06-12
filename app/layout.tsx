@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import BrandFooter from "@/components/ui/brand-footer";
 
 import "../styles/globals.css";
 
@@ -21,10 +22,12 @@ import "@/styles/ui/meta-badges.css";
 import "@/styles/dashboard/dashboard.css";
 import "@/styles/form/form.css";
 import "@/styles/qr/qr.css";
+import "@/styles/store/store.css";
+import "@/styles/customer/customer.css";
 
 export const metadata = {
   title: "Underbeach Fiera",
-  description: "Lead collection system - Fase 1",
+  description: "Underbeach retail management platform",
 };
 
 export default function RootLayout({
@@ -44,9 +47,7 @@ export default function RootLayout({
 
         {children}
 
-        <footer className="ub-footer">
-          (c) 2026 Underbeach - Sviluppato da Draphera - Brand Pro2Dev
-        </footer>
+        <BrandFooter />
       </body>
     </html>
   );

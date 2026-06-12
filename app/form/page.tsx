@@ -176,6 +176,17 @@ export default function FormPage() {
         }),
       });
 
+      const emailResult = await emailResponse.json().catch(() => null);
+
+      if (!emailResponse.ok) {
+        console.error("Registration email API error", {
+          status: emailResponse.status,
+          code: emailResult?.code,
+          message: emailResult?.error,
+          providerMessage: emailResult?.providerMessage,
+        });
+      }
+
       setEmailSent(emailResponse.ok);
     } catch (emailError) {
       console.error("Registration email failed", emailError);

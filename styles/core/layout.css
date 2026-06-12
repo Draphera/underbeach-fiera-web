@@ -59,23 +59,14 @@
 --------------------------------------------- */
 
 .ub-footer {
-  margin-top: auto;
-
-  text-align: center;
-  padding: var(--space-lg) var(--space-lg);
-
-  font-size: 0.85rem;
-  letter-spacing: 0.02em;
-  opacity: 0.65;
-
-  color: rgba(255, 255, 255, 0.75);
-
-  /* Luxury glass layer */
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(10px);
-
-  /* Linea luminosa premium */
   position: relative;
+  z-index: 10;
+  width: 100%;
+  margin-top: auto;
+  padding: 1.2rem clamp(1rem, 4vw, 3rem);
+  color: rgba(255, 255, 255, 0.76);
+  background: rgba(5, 20, 32, 0.96);
+  backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -99,17 +90,34 @@
 
 /* Hover micro‑interaction */
 .ub-footer:hover {
-  opacity: 0.85;
-  transition: opacity 0.25s ease;
+  border-top-color: rgba(156, 232, 238, 0.25);
 }
 
-/* ---------------------------------------------
-   HOME OVERRIDE (footer nascosto)
---------------------------------------------- */
-
-.ub-home + .ub-footer {
-  display: none;
+.ub-footer__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  max-width: 1280px;
+  margin: 0 auto;
+  font-size: 0.78rem;
 }
+
+.ub-footer__brand > a {
+  display: grid;
+  gap: 0.1rem;
+  min-width: max-content;
+  color: #fff;
+  text-decoration: none;
+}
+
+.ub-footer__brand > a strong { font-size: 1rem; }
+.ub-footer__brand > a span { color: #82d2d9; font-size: 0.67rem; }
+.ub-footer__brand p { display: flex; align-items: center; gap: 0.38rem; margin: 0; }
+.ub-footer__brand p > span { color: #f6c27a; font-size: 1rem; }
+.ub-footer__brand a { color: #9ce8ee; font-weight: 800; text-decoration: none; }
+.ub-footer__brand a:hover { color: #fff; }
+.ub-footer__divider { width: 1px; height: 2.2rem; background: rgba(255, 255, 255, 0.16); }
 
 /* ---------------------------------------------
    RESPONSIVE TUNING
@@ -121,7 +129,10 @@
   }
 
   .ub-footer {
-    font-size: 0.75rem;
-    padding: var(--space-md);
+    padding: 1rem;
   }
+
+  .ub-footer__brand { align-items: flex-start; flex-direction: column; }
+  .ub-footer__divider { width: 100%; height: 1px; }
+  .ub-footer__brand p { align-items: flex-start; }
 }

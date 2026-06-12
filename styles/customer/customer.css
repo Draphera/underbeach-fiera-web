@@ -1,0 +1,46 @@
+.ub-root:has(.ub-customer-page) .ub-header-invisible { display: none; }
+
+.ub-customer-page {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 560px);
+  gap: clamp(2rem, 6vw, 6rem);
+  min-height: 100svh;
+  align-items: center;
+  padding: clamp(1rem, 5vw, 5rem);
+  background: linear-gradient(100deg, rgba(5, 18, 29, 0.96), rgba(10, 42, 48, 0.85));
+  color: #fff;
+}
+
+.ub-customer-intro { display: grid; max-width: 680px; gap: 0.8rem; }
+.ub-customer-intro > span, .ub-customer-form > div > span, .ub-customer-state > span { color: #f6c27a; font-size: 0.7rem; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase; }
+.ub-customer-intro h1 { margin: 0; font-size: clamp(2.7rem, 7vw, 5.5rem); line-height: 0.95; }
+.ub-customer-intro p { margin: 0; color: #aaf4f8; font-weight: 800; }
+.ub-customer-intro strong { max-width: 580px; color: rgba(255,255,255,.7); line-height: 1.6; }
+.ub-customer-logo { display: grid; width: 5rem; height: 5rem; place-items: center; overflow: hidden; border: 1px solid rgba(255,255,255,.18); border-radius: 8px; background: rgba(255,255,255,.08); color: #f6c27a; font-size: 2rem; font-weight: 950; }
+.ub-customer-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+.ub-customer-form { display: grid; gap: 1rem; border: 1px solid rgba(255,255,255,.14); border-radius: 8px; padding: clamp(1.25rem, 4vw, 2rem); background: rgba(7,24,36,.95); box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+.ub-customer-form h2 { margin: .25rem 0 0; font-size: 1.8rem; }
+.ub-customer-form__row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; }
+.ub-customer-form label { display: grid; gap: .4rem; color: rgba(255,255,255,.78); font-size: .75rem; font-weight: 800; }
+.ub-customer-form input:not([type="checkbox"]), .ub-customer-form select { width: 100%; min-height: 2.85rem; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; padding: 0 .75rem; background: #132f40; color: #fff; font: inherit; outline: none; }
+.ub-customer-form input:focus, .ub-customer-form select:focus { border-color: #3fb7c4; box-shadow: 0 0 0 3px rgba(63,183,196,.14); }
+.ub-customer-form label > small { color: rgba(255,255,255,.48); font-size: .65rem; font-weight: 650; }
+.ub-customer-optional { display: grid; gap: 1rem; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; padding: 1rem; }
+.ub-customer-optional legend { padding: 0 .4rem; color: #f6c27a; font-size: .72rem; font-weight: 900; text-transform: uppercase; }
+.ub-customer-interests { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .55rem .8rem; }
+.ub-customer-interests > strong { grid-column: 1 / -1; color: rgba(255,255,255,.78); font-size: .75rem; }
+.ub-customer-check { grid-template-columns: auto 1fr; align-items: start; line-height: 1.45; }
+.ub-customer-check input { width: 1rem; height: 1rem; margin-top: .15rem; accent-color: #3fb7c4; }
+.ub-customer-form button { min-height: 3rem; border: 0; border-radius: 6px; background: #f6c27a; color: #0a1a2f; cursor: pointer; font: inherit; font-weight: 900; }
+.ub-customer-form button:disabled { cursor: wait; opacity: .6; }
+.ub-customer-error { border: 1px solid rgba(255,100,100,.3); border-radius: 6px; padding: .75rem; background: rgba(155,42,42,.17); color: #fecaca; font-size: .78rem; }
+.ub-customer-state { display: grid; grid-column: 1 / -1; width: min(620px,100%); justify-self: center; gap: .8rem; border: 1px solid rgba(255,255,255,.14); border-radius: 8px; padding: clamp(1.5rem,5vw,3rem); background: rgba(7,24,36,.94); text-align: center; }
+.ub-customer-state h1 { margin: 0; font-size: clamp(2rem,6vw,3.5rem); }
+.ub-customer-state p { margin: 0; color: rgba(255,255,255,.68); line-height: 1.6; }
+.ub-customer-state--success { border-color: rgba(94,214,176,.28); }
+
+@media (max-width: 800px) { .ub-customer-page { grid-template-columns: 1fr; align-content: center; } .ub-customer-intro { text-align: center; justify-items: center; } }
+@media (max-width: 520px) { .ub-customer-form__row, .ub-customer-interests { grid-template-columns: 1fr; } .ub-customer-interests > strong { grid-column: auto; } }

@@ -4,7 +4,6 @@
 ===========================================================
 */
 
-.ub-root:has(.ub-qr-page) .ub-footer,
 .ub-root:has(.ub-qr-page) .ub-header-invisible {
   display: none;
 }

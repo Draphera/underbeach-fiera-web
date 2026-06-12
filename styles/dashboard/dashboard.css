@@ -4,7 +4,6 @@
 ===========================================================
 */
 
-.ub-root:has(.ub-dashboard) .ub-footer,
 .ub-root:has(.ub-dashboard) .ub-header-invisible {
   display: none;
 }
@@ -773,6 +772,16 @@
   border: 1px solid rgba(216, 127, 166, 0.28);
   background: rgba(216, 127, 166, 0.12);
   color: #ffdce8;
+}
+
+.ub-dashboard__notice {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(29, 122, 85, 0.25);
+  background: rgba(29, 122, 85, 0.08);
+  color: #176a49;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .ub-dashboard__empty {

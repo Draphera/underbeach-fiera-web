@@ -15,6 +15,10 @@ comment on column public.negozi.privacy_accettata is
 comment on column public.negozi.privacy_accettata_at is
 'Data e ora UTC in cui il consenso privacy e stato espresso.';
 
+-- La route server-side verifica la registrazione prima di contattare Resend.
+grant usage on schema public to service_role;
+grant select on table public.negozi to service_role;
+
 alter table public.negozi enable row level security;
 
 grant usage on schema public to anon, authenticated;

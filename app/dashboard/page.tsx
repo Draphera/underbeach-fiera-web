@@ -50,6 +50,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
   const [activationAvailable, setActivationAvailable] = useState(true);
@@ -274,32 +275,59 @@ export default function DashboardPage() {
 
     setUpdatingId(lead.id);
     setError(null);
+    setNotice(null);
 
-    const { error: updateError } = await supabase
-      .from("negozi")
-      .update({
-        attivo: nextActive,
-        attivato_at: nextActive ? new Date().toISOString() : null,
-      })
-      .eq("id", lead.id);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
 
-    if (updateError) {
-      setError(updateError.message);
-    } else {
+    if (!accessToken) {
+      setError("Sessione operatore scaduta. Effettua nuovamente l'accesso.");
+      setUpdatingId(null);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/stores/activation", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ storeId: lead.id, active: nextActive }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        setError(
+          [result?.error, result?.providerMessage].filter(Boolean).join(" ") ||
+            "Operazione non completata."
+        );
+        return;
+      }
+
+      const changedAt = nextActive ? result?.activatedAt || new Date().toISOString() : null;
       setLeads((current) =>
         current.map((item) =>
           item.id === lead.id
             ? {
                 ...item,
                 attivo: nextActive,
-                attivato_at: nextActive ? new Date().toISOString() : null,
+                attivato_at: changedAt,
               }
             : item
         )
       );
+      setNotice(
+        nextActive
+          ? `Negozio attivato. Le credenziali temporanee sono state inviate a ${lead.email}.`
+          : "Negozio disattivato e accesso sospeso."
+      );
+    } catch (activationError) {
+      console.error("Store activation request failed", activationError);
+      setError("Impossibile contattare il servizio di attivazione.");
+    } finally {
+      setUpdatingId(null);
     }
-
-    setUpdatingId(null);
   }
 
   if (authLoading && !session) {
@@ -531,6 +559,7 @@ export default function DashboardPage() {
           </div>
 
           {error && <p className="ub-dashboard__error">{error}</p>}
+          {notice && <p className="ub-dashboard__notice">{notice}</p>}
 
           <div
             className={
