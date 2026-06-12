@@ -2,7 +2,7 @@
 .ub-store-portal {
   position: relative;
   z-index: 2;
-  min-height: 100vh;
+  min-height: 0;
   color: #f8fbf9;
 }
 
@@ -182,7 +182,8 @@
   top: 0;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  height: 100vh;
+  height: 100%;
+  min-height: 100%;
   padding: 1rem;
   background: #0a1a2f;
   color: #fff;

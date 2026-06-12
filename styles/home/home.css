@@ -5,8 +5,6 @@
 */
 
 .ub-root:has(.ub-home) {
-  min-height: 100svh;
-  height: auto;
   overflow-x: hidden;
 }
 
@@ -20,7 +18,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   width: 100%;
-  min-height: calc(100svh - 118px);
+  min-height: 0;
   padding: clamp(0.9rem, 3vw, 2.5rem);
   color: #fff;
   text-align: center;

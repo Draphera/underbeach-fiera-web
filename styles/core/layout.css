@@ -70,6 +70,11 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.ub-root > main {
+  flex: 1 0 auto;
+  min-height: 0;
+}
+
 .ub-footer::before {
   content: "";
   position: absolute;
