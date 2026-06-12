@@ -120,6 +120,7 @@
 .ub-footer__brand > a span { color: #82d2d9; font-size: 0.67rem; }
 .ub-footer__brand p { display: flex; align-items: center; gap: 0.38rem; margin: 0; }
 .ub-footer__brand p > span { color: #f6c27a; font-size: 1rem; }
+.ub-footer__brand .ub-footer__copyright { color: rgba(255, 255, 255, 0.5); font-size: 0.68rem; }
 .ub-footer__brand a { color: #9ce8ee; font-weight: 800; text-decoration: none; }
 .ub-footer__brand a:hover { color: #fff; }
 .ub-footer__divider { width: 1px; height: 2.2rem; background: rgba(255, 255, 255, 0.16); }

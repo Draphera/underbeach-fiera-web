@@ -13,8 +13,9 @@ export default function BrandFooter() {
         </p>
         <p>
           <span aria-label="Sviluppato con passione" role="img">♥</span>
-          Sviluppato con il cuore da <a href="https://pro2dev.online" rel="noreferrer" target="_blank">Pro2Dev</a>
+          Sviluppato e distribuito da <a href="https://pro2dev.online" rel="noreferrer" target="_blank">Pro2Dev</a>
         </p>
+        <p className="ub-footer__copyright">© 2026 Draphera</p>
       </div>
     </footer>
   );

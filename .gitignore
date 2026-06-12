@@ -10,6 +10,7 @@
 
 # next.js
 /.next/
+/.next-stale-*/
 /out/
 
 # production
@@ -27,7 +28,10 @@ yarn-error.log*
 # local env files
 .env*.local
 .env
-demo-backup/operator-credentials.txt
+.env.example
+docs/internal/
+demo-backup/
+data/demo-negozi.csv
 
 # vercel
 .vercel

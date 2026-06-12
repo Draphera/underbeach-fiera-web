@@ -1,6 +1,7 @@
 {
   "name": "underbeach-fiera-web",
   "version": "1.0.0",
+  "private": true,
   "main": "next.config.js",
   "directories": {
     "lib": "lib"
@@ -8,15 +9,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "seed:demo": "node scripts/seed-demo-negozi.mjs",
-    "seed:demo:dry": "node scripts/seed-demo-negozi.mjs --dry-run",
-    "seed:demo:status": "node scripts/update-demo-status.mjs",
     "start": "next start"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": ["underbeach", "retail", "crm"],
+  "author": "Draphera",
+  "license": "UNLICENSED",
+  "description": "Piattaforma Underbeach per la relazione tra negozi e clienti.",
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
     "next": "^14.2.35",
