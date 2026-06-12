@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { EMAIL_BRAND_TEXT, emailBrandFooter } from "@/lib/server/email-brand";
 
@@ -34,6 +35,23 @@ function allowedAdminEmails() {
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
+}
+
+async function findAuthUserByEmail(admin: SupabaseClient, email: string): Promise<User | null> {
+  const normalized = email.trim().toLowerCase();
+  let page = 1;
+
+  while (page <= 10) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 100 });
+    if (error) throw error;
+    const users = data.users as User[];
+    const match = users.find((user) => user.email?.toLowerCase() === normalized);
+    if (match) return match;
+    if (users.length < 100) return null;
+    page += 1;
+  }
+
+  return null;
 }
 
 function activationEmail(store: StoreRecord, password: string, loginUrl: string) {
@@ -190,24 +208,53 @@ export async function POST(request: Request) {
       );
     }
   } else {
-    const { data: created, error: createUserError } = await admin.auth.admin.createUser({
-      email: store.email.toLowerCase(),
-      password,
-      email_confirm: true,
-      user_metadata: { store_id: String(store.id), must_change_password: true },
-      app_metadata: { role: "store" },
-    });
-
-    if (createUserError || !created.user) {
-      console.error("Store account creation failed", createUserError);
+    let existingUser;
+    try {
+      existingUser = await findAuthUserByEmail(admin, store.email);
+    } catch (lookupError) {
+      console.error("Store account lookup failed", lookupError);
       return NextResponse.json(
-        { code: "ACCOUNT_CREATION_FAILED", error: createUserError?.message || "Impossibile creare l'account negozio." },
-        { status: 409 }
+        { code: "ACCOUNT_LOOKUP_FAILED", error: "Impossibile verificare l'account negozio esistente." },
+        { status: 502 }
       );
     }
 
-    authUserId = created.user.id;
-    createdUser = true;
+    if (existingUser) {
+      const { error: reuseError } = await admin.auth.admin.updateUserById(existingUser.id, {
+        password,
+        ban_duration: "none",
+        email_confirm: true,
+        user_metadata: { ...existingUser.user_metadata, store_id: String(store.id), must_change_password: true },
+        app_metadata: { ...existingUser.app_metadata, role: "store" },
+      });
+      if (reuseError) {
+        console.error("Existing store account update failed", reuseError);
+        return NextResponse.json(
+          { code: "ACCOUNT_UPDATE_FAILED", error: "Impossibile aggiornare l'account negozio esistente." },
+          { status: 502 }
+        );
+      }
+      authUserId = existingUser.id;
+    } else {
+      const { data: created, error: createUserError } = await admin.auth.admin.createUser({
+        email: store.email.toLowerCase(),
+        password,
+        email_confirm: true,
+        user_metadata: { store_id: String(store.id), must_change_password: true },
+        app_metadata: { role: "store" },
+      });
+
+      if (createUserError || !created.user) {
+        console.error("Store account creation failed", createUserError);
+        return NextResponse.json(
+          { code: "ACCOUNT_CREATION_FAILED", error: createUserError?.message || "Impossibile creare l'account negozio." },
+          { status: 409 }
+        );
+      }
+
+      authUserId = created.user.id;
+      createdUser = true;
+    }
   }
 
   const activatedAt = new Date().toISOString();

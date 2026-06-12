@@ -547,7 +547,7 @@ export default function StorePortalPage() {
         .from("negozi")
         .select(STORE_SELECT)
         .eq("auth_user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (!mounted) return;
 
@@ -556,22 +556,22 @@ export default function StorePortalPage() {
           .from("negozi")
           .select(STORE_SELECT_WITHOUT_QR)
           .eq("auth_user_id", session.user.id)
-          .single();
+          .maybeSingle();
 
         if (!mounted) return;
 
-        if (fallbackError) {
-          setError(fallbackError.message);
+        if (fallbackError || !fallbackData) {
+          setError(fallbackError?.message || "Il profilo negozio non e' collegato a questo account.");
           setProfile(null);
         } else {
           setCrmAvailable(false);
           setProfile({ ...(fallbackData as StoreProfile), qr_token: null });
         }
-      } else if (profileError) {
+      } else if (profileError || !data) {
         setError(
-          profileError.code === "PGRST116"
+          !data || profileError?.code === "PGRST116"
             ? "Il profilo negozio non e' attivo o non e' collegato a questo account."
-            : profileError.message
+            : profileError?.message || "Profilo negozio non disponibile."
         );
         setProfile(null);
       } else {
