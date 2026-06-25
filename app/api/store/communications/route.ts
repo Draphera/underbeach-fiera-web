@@ -4,7 +4,7 @@ import { isStoreMailConfigured, sendStoreMail } from "@/lib/server/store-mail";
 import { EMAIL_BRAND_TEXT, emailBrandFooter } from "@/lib/server/email-brand";
 
 type CommunicationRequest = {
-  type?: "invite" | "customer";
+  type?: "invite" | "customer" | "broadcast";
   email?: string;
   name?: string;
   customerId?: string;
@@ -74,7 +74,8 @@ export async function POST(request: Request) {
     .eq("stato", "inviata")
     .gte("created_at", oneHourAgo);
 
-  if ((count || 0) >= 50) {
+  const sentLastHour = count || 0;
+  if (sentLastHour >= 50) {
     return NextResponse.json({ error: "Limite temporaneo di 50 email all'ora raggiunto." }, { status: 429 });
   }
 
@@ -87,6 +88,7 @@ export async function POST(request: Request) {
   let subject = customSubject;
   let message = customMessage;
   let actionUrl: string | null = null;
+  let recipients: Array<{ id: string | null; email: string; name: string }> = [];
 
   if (type === "invite") {
     recipientEmail = String(body.email || "").trim().toLowerCase();
@@ -119,20 +121,51 @@ export async function POST(request: Request) {
 
     recipientEmail = customer.email.toLowerCase();
     recipientName = [customer.nome, customer.cognome].filter(Boolean).join(" ");
+  } else if (type === "broadcast") {
+    if (!subject || !message) {
+      return NextResponse.json({ error: "Oggetto e messaggio sono obbligatori per l'invio globale." }, { status: 400 });
+    }
+
+    const availableSlots = 50 - sentLastHour;
+    const { data: customers, error: customersError } = await admin
+      .from("clienti")
+      .select("id, nome, cognome, email")
+      .eq("negozio_id", store.id)
+      .eq("marketing_accettato", true)
+      .not("email", "is", null)
+      .limit(availableSlots);
+
+    if (customersError) {
+      return NextResponse.json({ error: "Lista clienti non disponibile." }, { status: 502 });
+    }
+
+    recipients = (customers || [])
+      .map((customer) => ({
+        id: customer.id,
+        email: String(customer.email || "").toLowerCase(),
+        name: [customer.nome, customer.cognome].filter(Boolean).join(" "),
+      }))
+      .filter((customer) => /^\S+@\S+\.\S+$/.test(customer.email));
+
+    if (recipients.length === 0) {
+      return NextResponse.json({ error: "Nessun cliente con consenso marketing ed email valida." }, { status: 400 });
+    }
   } else {
     return NextResponse.json({ error: "Tipo di comunicazione non valido." }, { status: 400 });
   }
 
-  if (!/^\S+@\S+\.\S+$/.test(recipientEmail) || !subject || !message) {
+  if (type !== "broadcast" && (!/^\S+@\S+\.\S+$/.test(recipientEmail) || !subject || !message)) {
     return NextResponse.json({ error: "Destinatario, oggetto e messaggio sono obbligatori." }, { status: 400 });
   }
 
   const safeStore = escapeHtml(store.ragione_sociale || "Negozio Underbeach");
-  const safeName = escapeHtml(recipientName);
   const actionBlock = actionUrl
     ? `<p style="margin:28px 0"><a href="${escapeHtml(actionUrl)}" style="display:inline-block;background:#0a1a2f;color:#fff;padding:13px 20px;text-decoration:none;font-weight:700">Registrati presso il negozio</a></p>`
     : "";
-  const html = `
+
+  async function deliver(recipient: { id: string | null; email: string; name: string }) {
+    const safeName = escapeHtml(recipient.name);
+    const html = `
     <div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#0a1a2f;line-height:1.6">
       <p style="color:#b8792f;font-size:12px;font-weight:700;text-transform:uppercase">${safeStore} / Underbeach</p>
       <h1 style="font-size:28px;line-height:1.15;margin:12px 0">${escapeHtml(subject)}</h1>
@@ -144,44 +177,78 @@ export async function POST(request: Request) {
     </div>
   `;
 
-  let providerId: string | null = null;
-  let providerError: string | null = null;
-  try {
-    const delivery = await sendStoreMail({
-      to: recipientEmail,
-      subject,
-      html,
-      text: `${recipientName ? `Ciao ${recipientName},\n\n` : ""}${message}${actionUrl ? `\n\nRegistrati qui: ${actionUrl}` : ""}\n\n${EMAIL_BRAND_TEXT}`,
-      replyTo: store.email,
-    });
-    providerId = delivery.messageId || null;
-  } catch (error) {
-    providerError = error instanceof Error ? error.message : "Errore SMTP Aruba";
-  }
-  const sent = !providerError;
+    let providerId: string | null = null;
+    let providerError: string | null = null;
+    try {
+      const delivery = await sendStoreMail({
+        to: recipient.email,
+        subject,
+        html,
+        text: `${recipient.name ? `Ciao ${recipient.name},\n\n` : ""}${message}${actionUrl ? `\n\nRegistrati qui: ${actionUrl}` : ""}\n\n${EMAIL_BRAND_TEXT}`,
+        replyTo: store.email,
+      });
+      providerId = delivery.messageId || null;
+    } catch (error) {
+      providerError = error instanceof Error ? error.message : "Errore SMTP Aruba";
+    }
 
-  const { error: historyError } = await admin.from("comunicazioni").insert({
-    negozio_id: store.id,
-    cliente_id: customerId,
-    tipo: type === "invite" ? "invito" : "cliente",
-    destinatario_email: recipientEmail,
-    destinatario_nome: recipientName || null,
-    oggetto: subject,
-    messaggio: message,
-    stato: sent ? "inviata" : "errore",
-    provider_id: providerId,
-    provider_error: providerError,
+    return {
+      providerId,
+      providerError,
+      sent: !providerError,
+      history: {
+        negozio_id: store.id,
+        cliente_id: recipient.id,
+        tipo: type === "invite" ? "invito" : "cliente",
+        destinatario_email: recipient.email,
+        destinatario_nome: recipient.name || null,
+        oggetto: subject,
+        messaggio: message,
+        stato: providerError ? "errore" : "inviata",
+        provider_id: providerId,
+        provider_error: providerError,
+      },
+    };
+  }
+
+  if (type === "broadcast") {
+    const results = [];
+    for (const recipient of recipients) {
+      results.push(await deliver(recipient));
+    }
+
+    const { error: historyError } = await admin.from("comunicazioni").insert(results.map((result) => result.history));
+    if (historyError) console.error("Broadcast communication history insert failed", historyError);
+
+    const sent = results.filter((result) => result.sent).length;
+    const failed = results.length - sent;
+    if (sent === 0) {
+      return NextResponse.json(
+        { error: "Invio globale non riuscito.", sent, failed },
+        { status: 502 }
+      );
+    }
+
+    return NextResponse.json({ success: true, sent, failed, total: results.length });
+  }
+
+  const deliveryResult = await deliver({
+    id: customerId,
+    email: recipientEmail,
+    name: recipientName,
   });
+
+  const { error: historyError } = await admin.from("comunicazioni").insert(deliveryResult.history);
 
   if (historyError) console.error("Communication history insert failed", historyError);
 
-  if (!sent) {
-    console.error("Store communication failed", providerError);
+  if (!deliveryResult.sent) {
+    console.error("Store communication failed", deliveryResult.providerError);
     return NextResponse.json(
-      { error: "Invio SMTP non riuscito.", providerMessage: providerError },
+      { error: "Invio SMTP non riuscito.", providerMessage: deliveryResult.providerError },
       { status: 502 }
     );
   }
 
-  return NextResponse.json({ success: true, id: providerId });
+  return NextResponse.json({ success: true, id: deliveryResult.providerId });
 }

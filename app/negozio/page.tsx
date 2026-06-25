@@ -73,7 +73,7 @@ type EventAutomation = {
 };
 
 type CommunicationPayload = {
-  type: "invite" | "customer";
+  type: "invite" | "customer" | "broadcast";
   email?: string;
   name?: string;
   customerId?: string;
@@ -337,7 +337,7 @@ function CommunicationsPanel({
   onAutomationToggle: (automation: EventAutomation) => Promise<void>;
   onAutomationDelete: (automation: EventAutomation) => Promise<void>;
 }) {
-  const [mode, setMode] = useState<"invite" | "customer">("invite");
+  const [mode, setMode] = useState<"invite" | "customer" | "broadcast">("invite");
   const [sending, setSending] = useState(false);
   const [copied, setCopied] = useState(false);
   const eligibleCustomers = customers.filter((customer) => customer.marketing_accettato && customer.email);
@@ -421,6 +421,7 @@ function CommunicationsPanel({
       <div className="ub-store-communication-tabs" role="tablist" aria-label="Tipo comunicazione">
         <button className={mode === "invite" ? "is-active" : ""} onClick={() => setMode("invite")} type="button">Invita un cliente</button>
         <button className={mode === "customer" ? "is-active" : ""} onClick={() => setMode("customer")} type="button">Scrivi a un cliente</button>
+        <button className={mode === "broadcast" ? "is-active" : ""} onClick={() => setMode("broadcast")} type="button">Invio globale</button>
       </div>
 
       <form className="ub-store-communication-form" onSubmit={submitCommunication}>
@@ -434,7 +435,7 @@ function CommunicationsPanel({
               L'email includera' automaticamente il pulsante verso la pagina di registrazione personalizzata del negozio, la stessa aperta dal QR.
             </div>
           </>
-        ) : (
+        ) : mode === "customer" ? (
           <label>
             Cliente con consenso marketing
             <select name="customer_id" required defaultValue="">
@@ -445,11 +446,15 @@ function CommunicationsPanel({
             </select>
             {eligibleCustomers.length === 0 && <small>Nessun cliente ha ancora accettato comunicazioni marketing.</small>}
           </label>
+        ) : (
+          <div className="ub-store-communication-note ub-store-communication-note--broadcast">
+            L'invio globale raggiunge tutti i clienti con consenso marketing ed email valida. Destinatari disponibili ora: <strong>{eligibleCustomers.length}</strong>. Il limite operativo e' 50 email ogni ora.
+          </div>
         )}
 
-        <label>Oggetto<input maxLength={140} name="subject" placeholder={mode === "invite" ? "Lascia vuoto per usare l'oggetto automatico" : "Oggetto email"} required={mode === "customer"} /></label>
-        <label>Messaggio<textarea maxLength={4000} name="message" placeholder={mode === "invite" ? "Lascia vuoto per usare il testo di invito automatico" : "Scrivi il messaggio per il cliente"} required={mode === "customer"} rows={7} /></label>
-        <button className="ub-store-button" disabled={sending || (mode === "customer" && eligibleCustomers.length === 0)} type="submit">{sending ? "Invio..." : mode === "invite" ? "Invia invito" : "Invia comunicazione"}</button>
+        <label>Oggetto<input maxLength={140} name="subject" placeholder={mode === "invite" ? "Lascia vuoto per usare l'oggetto automatico" : mode === "broadcast" ? "Oggetto per tutti i clienti" : "Oggetto email"} required={mode !== "invite"} /></label>
+        <label>Messaggio<textarea maxLength={4000} name="message" placeholder={mode === "invite" ? "Lascia vuoto per usare il testo di invito automatico" : mode === "broadcast" ? "Scrivi il messaggio globale per i clienti" : "Scrivi il messaggio per il cliente"} required={mode !== "invite"} rows={7} /></label>
+        <button className="ub-store-button" disabled={sending || ((mode === "customer" || mode === "broadcast") && eligibleCustomers.length === 0)} type="submit">{sending ? "Invio..." : mode === "invite" ? "Invia invito" : mode === "broadcast" ? "Invia a tutti" : "Invia comunicazione"}</button>
       </form>
 
       <section className="ub-store-communication-history">
@@ -935,7 +940,13 @@ export default function StorePortalPage() {
         return false;
       }
 
-      setNotice(payload.type === "invite" ? "Invito inviato con il link di registrazione del negozio." : "Comunicazione inviata al cliente.");
+      setNotice(
+        payload.type === "invite"
+          ? "Invito inviato con il link di registrazione del negozio."
+          : payload.type === "broadcast"
+            ? `Invio globale completato: ${result?.sent || 0} inviate${result?.failed ? `, ${result.failed} errori` : ""}.`
+            : "Comunicazione inviata al cliente."
+      );
       await loadCommunications();
       return true;
     } catch (sendError) {

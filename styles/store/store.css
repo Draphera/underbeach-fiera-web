@@ -818,6 +818,8 @@
   font-size: 0.76rem;
   line-height: 1.5;
 }
+.ub-store-communication-note--broadcast { border-left-color: #b8792f; background: #fff8ec; color: #6a5131; }
+.ub-store-communication-note--broadcast strong { color: #0a1a2f; }
 
 .ub-store-communication-history { overflow: hidden; border: 1px solid #dce3e1; border-radius: 8px; background: #fff; }
 .ub-store-communication-history__header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; background: #f4f7f6; }
