@@ -37,6 +37,15 @@ function allowedAdminEmails() {
     .filter(Boolean);
 }
 
+function hasAdminRole(user: User | null) {
+  if (!user) return false;
+  return (
+    user.app_metadata?.role === "admin" ||
+    user.user_metadata?.role === "admin" ||
+    user.user_metadata?.is_admin === true
+  );
+}
+
 async function findAuthUserByEmail(admin: SupabaseClient, email: string): Promise<User | null> {
   const normalized = email.trim().toLowerCase();
   let page = 1;
@@ -112,15 +121,24 @@ export async function POST(request: Request) {
   const { data: userData, error: userError } = await admin.auth.getUser(accessToken);
   const operator = userData.user;
   const isAdmin =
-    operator?.app_metadata?.role === "admin" ||
+    hasAdminRole(operator) ||
     Boolean(
       operator?.email &&
         allowedAdminEmails().includes(operator.email.toLowerCase())
     );
 
   if (userError || !operator || !isAdmin) {
+    console.error("Store activation unauthorized", {
+      operatorEmail: operator?.email || null,
+      hasAdminRole: hasAdminRole(operator || null),
+      adminAllowlistConfigured: allowedAdminEmails().length > 0,
+    });
     return NextResponse.json(
-      { code: "ADMIN_REQUIRED", error: "Utente non autorizzato all'attivazione." },
+      {
+        code: "ADMIN_REQUIRED",
+        error:
+          "Utente non autorizzato all'attivazione. Verifica che l'email operatore sia inclusa in UNDERBEACH_ADMIN_EMAILS oppure che l'utente abbia ruolo admin.",
+      },
       { status: 403 }
     );
   }

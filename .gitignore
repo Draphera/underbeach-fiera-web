@@ -32,6 +32,7 @@ yarn-error.log*
 docs/internal/
 demo-backup/
 data/demo-negozi.csv
+recap_dev.md
 
 # vercel
 .vercel
