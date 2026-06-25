@@ -89,6 +89,47 @@ const STORE_SELECT =
 const STORE_SELECT_WITHOUT_QR =
   "id, ragione_sociale, partita_iva, indirizzo, cap, citta, provincia, email, telefono_negozio, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, attivo";
 
+const AUTOMATION_GROUPS = [
+  {
+    label: "Eventi cliente",
+    options: [
+      { value: "compleanno", label: "Compleanno cliente", hint: "Usa la data di nascita del cliente" },
+    ],
+  },
+  {
+    label: "Festivita",
+    options: [
+      { value: "natale", label: "Natale", hint: "Auguri e codice sconto natalizio" },
+      { value: "pasqua", label: "Pasqua", hint: "Data calcolata automaticamente ogni anno" },
+      { value: "ferragosto", label: "Ferragosto", hint: "Messaggio estivo o invito in negozio" },
+      { value: "capodanno", label: "Capodanno", hint: "Auguri e nuova collezione" },
+      { value: "black_friday", label: "Black Friday", hint: "Offerta dedicata a tempo" },
+      { value: "saldi", label: "Saldi stagionali", hint: "Campagna saldi" },
+    ],
+  },
+  {
+    label: "Promozioni periodiche",
+    options: [
+      { value: "sconto_settimanale", label: "Sconto settimanale", hint: "Promemoria ricorrente su una data scelta" },
+      { value: "offerta_mensile", label: "Offerta mensile", hint: "Campagna mensile programmata" },
+      { value: "campagna_stagionale", label: "Campagna stagionale", hint: "Lancio collezione o stagione" },
+      { value: "promozione", label: "Promozione libera", hint: "Messaggio commerciale personalizzato" },
+    ],
+  },
+];
+
+const AUTOMATION_OPTIONS = AUTOMATION_GROUPS.flatMap((group) => group.options);
+
+function automationLabel(type: string) {
+  return AUTOMATION_OPTIONS.find((option) => option.value === type)?.label || type.replace(/_/g, " ");
+}
+
+function automationDateLabel(automation: EventAutomation) {
+  if (automation.tipo === "compleanno") return "data compleanno cliente";
+  if (automation.tipo === "pasqua") return "data Pasqua automatica";
+  return automation.giorno && automation.mese ? `${automation.giorno}/${automation.mese}` : "data da completare";
+}
+
 function isQrMigrationMissing(message: string) {
   const normalized = message.toLowerCase();
   return (
@@ -430,18 +471,35 @@ function CommunicationsPanel({
 
       <section className="ub-store-automations">
         <div className="ub-store-communication-history__header">
-          <div><span className="ub-store-eyebrow">Programmazione SMTP</span><h3>Messaggi automatici</h3></div>
-          <small>Usa <code>{"{nome}"}</code> e <code>{"{negozio}"}</code> nel testo per personalizzarlo.</small>
+          <div><span className="ub-store-eyebrow">Email automatiche</span><h3>Eventi programmati</h3></div>
+          <small>Email pronte per compleanni, festivita, saldi e campagne periodiche. Le notifiche push saranno collegabili nella fase App/PWA.</small>
+        </div>
+        <div className="ub-store-automation-guide">
+          <article><strong>Personalizza il messaggio</strong><span>Nel testo puoi usare <code>{"{nome}"}</code> per il cliente e <code>{"{negozio}"}</code> per il nome del negozio.</span></article>
+          <article><strong>Aggiungi promo</strong><span>Codice sconto e percentuale vengono inseriti automaticamente nella mail inviata.</span></article>
+          <article><strong>Programma l'evento</strong><span>Compleanno e Pasqua usano date automatiche; gli altri eventi usano giorno e mese scelti dal negozio.</span></article>
         </div>
         <form className="ub-store-automation-form" onSubmit={submitAutomation}>
-          <label>Tipo<select name="tipo" required defaultValue=""><option disabled value="">Seleziona</option><option value="compleanno">Compleanno cliente</option><option value="natale">Natale</option><option value="ferragosto">Ferragosto</option><option value="capodanno">Capodanno</option><option value="black_friday">Black Friday</option><option value="saldi">Saldi</option><option value="promozione">Promozione</option></select></label>
-          <label>Nome automazione<input maxLength={120} name="nome" required /></label>
-          <label>Giorno<input max={31} min={1} name="giorno" type="number" /></label>
-          <label>Mese<input max={12} min={1} name="mese" type="number" /></label>
-          <label className="ub-store-automation-wide">Oggetto email<input maxLength={140} name="oggetto" required /></label>
-          <label>Codice sconto<input maxLength={60} name="codice_sconto" /></label>
-          <label>Sconto %<input max={100} min={1} name="sconto_percentuale" type="number" /></label>
-          <label className="ub-store-automation-wide">Messaggio<textarea maxLength={4000} name="messaggio" required rows={5} /></label>
+          <label>
+            Tipo evento
+            <select name="tipo" required defaultValue="">
+              <option disabled value="">Seleziona evento</option>
+              {AUTOMATION_GROUPS.map((group) => (
+                <optgroup key={group.label} label={group.label}>
+                  {group.options.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          </label>
+          <label>Nome automazione<input maxLength={120} name="nome" placeholder="Es. Auguri compleanno VIP" required /></label>
+          <label>Giorno<input max={31} min={1} name="giorno" placeholder="Es. 25" type="number" /></label>
+          <label>Mese<input max={12} min={1} name="mese" placeholder="Es. 12" type="number" /></label>
+          <label className="ub-store-automation-wide">Oggetto email<input maxLength={140} name="oggetto" placeholder="Es. {nome}, un regalo speciale da {negozio}" required /></label>
+          <label>Codice sconto<input maxLength={60} name="codice_sconto" placeholder="Es. NATALE20" /></label>
+          <label>Sconto %<input max={100} min={1} name="sconto_percentuale" placeholder="20" type="number" /></label>
+          <label className="ub-store-automation-wide">Messaggio personalizzato<textarea maxLength={4000} name="messaggio" placeholder="Ciao {nome}, ti aspettiamo da {negozio} con una sorpresa dedicata a te." required rows={5} /></label>
           <label className="ub-store-automation-check"><input name="attiva" type="checkbox" value="true" /> Attiva subito</label>
           <button className="ub-store-button" type="submit">Crea automazione</button>
         </form>
@@ -449,7 +507,7 @@ function CommunicationsPanel({
           {automations.length === 0 && <p>Nessuna automazione configurata.</p>}
           {automations.map((automation) => (
             <article key={automation.id}>
-              <span><strong>{automation.nome}</strong><small>{automation.tipo.replace("_", " ")} {automation.giorno && automation.mese ? `- ${automation.giorno}/${automation.mese}` : "- data cliente"}</small></span>
+              <span><strong>{automation.nome}</strong><small>{automationLabel(automation.tipo)} - {automationDateLabel(automation)}</small></span>
               <span><strong>{automation.oggetto}</strong><small>{automation.codice_sconto || "Nessun codice sconto"}</small></span>
               <button className={automation.attiva ? "ub-store-automation-status is-active" : "ub-store-automation-status"} onClick={() => onAutomationToggle(automation)} type="button">{automation.attiva ? "Attiva" : "In pausa"}</button>
               <button className="ub-store-danger-button" onClick={() => onAutomationDelete(automation)} type="button">Elimina</button>

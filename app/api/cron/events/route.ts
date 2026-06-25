@@ -7,6 +7,24 @@ function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
+function easterDate(year: number) {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return { month, day };
+}
+
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
@@ -21,8 +39,10 @@ export async function GET(request: Request) {
 
   const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const today = new Date();
+  const year = today.getUTCFullYear();
   const month = today.getUTCMonth() + 1;
   const day = today.getUTCDate();
+  const easter = easterDate(year);
   const dateKey = today.toISOString().slice(0, 10);
   const { data: automations, error } = await admin
     .from("automazioni_eventi")
@@ -38,7 +58,9 @@ export async function GET(request: Request) {
 
   for (const automation of automations || []) {
     const isBirthday = automation.tipo === "compleanno";
-    if (!isBirthday && (automation.mese !== month || automation.giorno !== day)) continue;
+    const isEaster = automation.tipo === "pasqua";
+    if (!isBirthday && !isEaster && (automation.mese !== month || automation.giorno !== day)) continue;
+    if (isEaster && (easter.month !== month || easter.day !== day)) continue;
 
     let customerQuery = admin
       .from("clienti")

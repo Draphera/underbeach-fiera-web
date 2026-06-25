@@ -1,7 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-const TYPES = ["compleanno", "natale", "ferragosto", "capodanno", "black_friday", "saldi", "promozione"];
+const TYPES = [
+  "compleanno",
+  "natale",
+  "pasqua",
+  "ferragosto",
+  "capodanno",
+  "black_friday",
+  "saldi",
+  "sconto_settimanale",
+  "offerta_mensile",
+  "campagna_stagionale",
+  "promozione",
+];
 
 async function authorize(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -26,7 +38,7 @@ function automationData(body: Record<string, unknown>) {
   const giorno = body.giorno ? Number(body.giorno) : null;
   const sconto = body.scontoPercentuale ? Number(body.scontoPercentuale) : null;
   if (!TYPES.includes(tipo) || !nome || !oggetto || !messaggio) throw new Error("Tipo, nome, oggetto e messaggio sono obbligatori.");
-  if (tipo !== "compleanno" && (!mese || !giorno)) throw new Error("Giorno e mese sono obbligatori per questa automazione.");
+  if (!["compleanno", "pasqua"].includes(tipo) && (!mese || !giorno)) throw new Error("Giorno e mese sono obbligatori per questa automazione.");
   if (mese !== null && (mese < 1 || mese > 12)) throw new Error("Mese non valido.");
   if (giorno !== null && (giorno < 1 || giorno > 31)) throw new Error("Giorno non valido.");
   if (sconto !== null && (sconto < 1 || sconto > 100)) throw new Error("Percentuale sconto non valida.");
@@ -37,8 +49,8 @@ function automationData(body: Record<string, unknown>) {
     messaggio,
     codice_sconto: String(body.codiceSconto || "").trim().slice(0, 60) || null,
     sconto_percentuale: sconto,
-    mese: tipo === "compleanno" ? null : mese,
-    giorno: tipo === "compleanno" ? null : giorno,
+    mese: ["compleanno", "pasqua"].includes(tipo) ? null : mese,
+    giorno: ["compleanno", "pasqua"].includes(tipo) ? null : giorno,
     attiva: body.attiva === true,
     updated_at: new Date().toISOString(),
   };

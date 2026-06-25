@@ -12,7 +12,7 @@ alter table public.comunicazioni alter column provider set not null;
 create table if not exists public.automazioni_eventi (
   id uuid primary key default gen_random_uuid(),
   negozio_id uuid not null references public.negozi(id) on delete cascade,
-  tipo text not null check (tipo in ('compleanno', 'natale', 'ferragosto', 'capodanno', 'black_friday', 'saldi', 'promozione')),
+  tipo text not null check (tipo in ('compleanno', 'natale', 'pasqua', 'ferragosto', 'capodanno', 'black_friday', 'saldi', 'sconto_settimanale', 'offerta_mensile', 'campagna_stagionale', 'promozione')),
   nome text not null,
   oggetto text not null,
   messaggio text not null,

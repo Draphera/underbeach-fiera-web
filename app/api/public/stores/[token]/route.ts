@@ -21,13 +21,14 @@ function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-async function sendCustomerConfirmation(email: string, name: string, storeName: string) {
+async function sendCustomerConfirmation(email: string, name: string, storeName: string, dashboardUrl: string) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL;
   if (!apiKey || !from || !email) return;
 
   const safeName = escapeHtml(name);
   const safeStore = escapeHtml(storeName);
+  const safeDashboardUrl = escapeHtml(dashboardUrl);
   const subject = `Registrazione confermata presso ${storeName}`;
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -36,8 +37,8 @@ async function sendCustomerConfirmation(email: string, name: string, storeName: 
       from,
       to: [email],
       subject,
-      html: `<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#0a1a2f;line-height:1.6"><p style="color:#b8792f;font-size:12px;font-weight:700;text-transform:uppercase">Underbeach</p><h1 style="font-size:28px">Registrazione confermata</h1><p>Ciao ${safeName},</p><p>la tua registrazione presso <strong>${safeStore}</strong> e' stata completata correttamente.</p><p>Da questo momento il negozio potra' inviarti comunicazioni e novita' in base ai consensi che hai espresso.</p><p style="margin-top:30px;color:#64707a;font-size:13px">Grazie per essere entrato nella rete Underbeach.</p>${emailBrandFooter()}</div>`,
-      text: `Ciao ${name}, la tua registrazione presso ${storeName} e' stata completata correttamente. Grazie per essere entrato nella rete Underbeach.\n\n${EMAIL_BRAND_TEXT}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:620px;margin:0 auto;color:#0a1a2f;line-height:1.6"><p style="color:#b8792f;font-size:12px;font-weight:700;text-transform:uppercase">Underbeach</p><h1 style="font-size:28px">Registrazione confermata</h1><p>Ciao ${safeName},</p><p>la tua registrazione presso <strong>${safeStore}</strong> e' stata completata correttamente.</p><p>Da questo momento il negozio potra' inviarti comunicazioni e novita' in base ai consensi che hai espresso.</p><p style="margin:28px 0"><a href="${safeDashboardUrl}" style="display:inline-block;background:#0a1a2f;color:#fff;padding:13px 20px;text-decoration:none;font-weight:700">Apri la tua area cliente</a></p><p style="color:#64707a;font-size:13px">Per accedere usa la stessa email e lo stesso cellulare inseriti in registrazione.</p><p style="margin-top:30px;color:#64707a;font-size:13px">Grazie per essere entrato nella rete Underbeach.</p>${emailBrandFooter()}</div>`,
+      text: `Ciao ${name}, la tua registrazione presso ${storeName} e' stata completata correttamente.\n\nApri la tua area cliente: ${dashboardUrl}\nPer accedere usa la stessa email e lo stesso cellulare inseriti in registrazione.\n\nGrazie per essere entrato nella rete Underbeach.\n\n${EMAIL_BRAND_TEXT}`,
       tags: [{ name: "source", value: "customer_registration" }],
     }),
   });
@@ -106,8 +107,8 @@ export async function POST(request: Request, { params }: RouteContext) {
       { status: 400 }
     );
   }
-  if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-    return NextResponse.json({ error: "Indirizzo email non valido." }, { status: 400 });
+  if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    return NextResponse.json({ error: "Inserisci un indirizzo email valido per ricevere la conferma." }, { status: 400 });
   }
   if (!/^[\d+(). /-]{8,30}$/.test(telefono)) {
     return NextResponse.json({ error: "Numero di cellulare non valido." }, { status: 400 });
@@ -139,7 +140,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     negozio_id: store.id,
     nome,
     cognome,
-    email: email || null,
+    email,
     telefono,
     citta,
     nascita_giorno: nascitaGiorno,
@@ -166,11 +167,12 @@ export async function POST(request: Request, { params }: RouteContext) {
     return NextResponse.json({ error: "Registrazione non completata." }, { status: 502 });
   }
 
-  if (email) {
-    await sendCustomerConfirmation(email, nome, store.ragione_sociale || "il tuo negozio").catch((error) => {
-      console.error("Customer confirmation request failed", error);
-    });
-  }
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
+  const dashboardUrl = `${baseUrl.replace(/\/$/, "")}/cliente/${encodeURIComponent(params.token)}`;
+
+  await sendCustomerConfirmation(email, nome, store.ragione_sociale || "il tuo negozio", dashboardUrl).catch((error) => {
+    console.error("Customer confirmation request failed", error);
+  });
 
   return NextResponse.json({ success: true, storeName: store.ragione_sociale });
 }
