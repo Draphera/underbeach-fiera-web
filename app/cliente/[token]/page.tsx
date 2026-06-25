@@ -16,7 +16,15 @@ type CustomerDashboard = {
     nome: string;
     cognome: string;
     email: string | null;
+    telefono: string | null;
     citta: string | null;
+    nascita_giorno: number | null;
+    nascita_mese: number | null;
+    profili_social: string | null;
+    genere: string | null;
+    taglia_seno: string | null;
+    taglia_slip: string | null;
+    merceologie_interesse: string[];
     marketing_accettato: boolean;
     created_at: string;
   };
@@ -43,6 +51,10 @@ type CustomerDashboard = {
   }[];
 };
 
+type CustomerTab = "overview" | "messages" | "products" | "profile";
+
+const INTERESTS = ["Beachwear", "Abbigliamento", "Underwear", "Lingerie", "Maglieria intima", "Calzetteria"];
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("it-IT", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));
 }
@@ -62,6 +74,13 @@ export default function CustomerRegistrationPage() {
   const [error, setError] = useState<string | null>(null);
   const [accessError, setAccessError] = useState<string | null>(null);
   const [dashboard, setDashboard] = useState<CustomerDashboard | null>(null);
+  const [customerTab, setCustomerTab] = useState<CustomerTab>("overview");
+  const [credentials, setCredentials] = useState<{ email: string; telefono: string } | null>(null);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileNotice, setProfileNotice] = useState<string | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -106,6 +125,10 @@ export default function CustomerRegistrationPage() {
       const nextDashboard = result as CustomerDashboard;
       setDashboard(nextDashboard);
       setStore(nextDashboard.store);
+      setCredentials({
+        email: String(credentials.email || "").trim().toLowerCase(),
+        telefono: String(credentials.telefono || "").trim(),
+      });
       return nextDashboard;
     } catch {
       setAccessError("Connessione non disponibile. Riprova tra poco.");
@@ -168,6 +191,89 @@ export default function CustomerRegistrationPage() {
     }
   }
 
+  async function handleProfileSave(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!credentials) return;
+    setProfileSaving(true);
+    setProfileError(null);
+    setProfileNotice(null);
+    const form = new FormData(event.currentTarget);
+
+    try {
+      const response = await fetch(`/api/public/stores/${encodeURIComponent(params.token)}/customer`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: credentials.email,
+          telefono: credentials.telefono,
+          nome: form.get("nome"),
+          cognome: form.get("cognome"),
+          citta: form.get("citta"),
+          nextEmail: form.get("email"),
+          nextTelefono: form.get("telefono"),
+          nascitaGiorno: form.get("nascita_giorno"),
+          nascitaMese: form.get("nascita_mese"),
+          profiliSocial: form.get("profili_social"),
+          genere: form.get("genere"),
+          tagliaSeno: form.get("taglia_seno"),
+          tagliaSlip: form.get("taglia_slip"),
+          merceologieInteresse: form.getAll("merceologie_interesse"),
+          marketingAccettato: form.get("marketing") === "on",
+        }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        setProfileError(result?.error || "Aggiornamento non completato.");
+        return;
+      }
+
+      const nextDashboard = result as CustomerDashboard;
+      setDashboard(nextDashboard);
+      setCredentials({
+        email: nextDashboard.customer.email || "",
+        telefono: nextDashboard.customer.telefono || "",
+      });
+      setProfileNotice("Dati aggiornati correttamente.");
+    } catch {
+      setProfileError("Connessione non disponibile. Riprova tra poco.");
+    } finally {
+      setProfileSaving(false);
+    }
+  }
+
+  async function handleDeleteProfile() {
+    if (!credentials || deleteText.trim().toUpperCase() !== "CANCELLA") return;
+    if (!window.confirm("Confermi la cancellazione definitiva dal negozio?")) return;
+    setDeleting(true);
+    setProfileError(null);
+    setProfileNotice(null);
+
+    try {
+      const response = await fetch(`/api/public/stores/${encodeURIComponent(params.token)}/customer`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...credentials, confirmation: deleteText }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        setProfileError(result?.error || "Cancellazione non completata.");
+        return;
+      }
+
+      setDashboard(null);
+      setCredentials(null);
+      setDone(false);
+      setDeleteText("");
+      setAccessError("Profilo cancellato correttamente.");
+    } catch {
+      setProfileError("Connessione non disponibile. Riprova tra poco.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   if (loading) {
     return <main className="ub-customer-page"><section className="ub-customer-state">Caricamento...</section></main>;
   }
@@ -184,6 +290,7 @@ export default function CustomerRegistrationPage() {
 
   if (dashboard) {
     const latestMessage = dashboard.communications[0];
+    const customer = dashboard.customer;
 
     return (
       <main className="ub-customer-dashboard">
@@ -198,29 +305,51 @@ export default function CustomerRegistrationPage() {
           </div>
         </section>
 
-        <section className="ub-customer-dashboard__stats">
-          <article><span>Messaggi</span><strong>{dashboard.communications.length}</strong><small>Storico personale</small></article>
-          <article><span>Articoli</span><strong>{dashboard.products.length}</strong><small>Dal negozio</small></article>
-          <article><span>Consenso</span><strong>{dashboard.customer.marketing_accettato ? "Attivo" : "Base"}</strong><small>Comunicazioni commerciali</small></article>
-        </section>
+        <nav className="ub-customer-tabs" aria-label="Sezioni area cliente">
+          <button className={customerTab === "overview" ? "is-active" : ""} onClick={() => setCustomerTab("overview")} type="button">Panoramica</button>
+          <button className={customerTab === "messages" ? "is-active" : ""} onClick={() => setCustomerTab("messages")} type="button">Messaggi</button>
+          <button className={customerTab === "products" ? "is-active" : ""} onClick={() => setCustomerTab("products")} type="button">Articoli</button>
+          <button className={customerTab === "profile" ? "is-active" : ""} onClick={() => setCustomerTab("profile")} type="button">I miei dati</button>
+        </nav>
 
-        <section className="ub-customer-dashboard__grid">
-          <article className="ub-customer-panel ub-customer-panel--featured">
-            <span>Ultimo messaggio</span>
-            {latestMessage ? (
-              <>
-                <h2>{latestMessage.oggetto}</h2>
-                <p>{latestMessage.messaggio}</p>
-                <time>{formatDate(latestMessage.created_at)}</time>
-              </>
-            ) : (
-              <>
-                <h2>Nessun messaggio ancora</h2>
-                <p>Quando il negozio ti inviera' comunicazioni dedicate le troverai qui.</p>
-              </>
-            )}
-          </article>
+        {customerTab === "overview" && (
+          <>
+            <section className="ub-customer-dashboard__stats">
+              <article><span>Messaggi</span><strong>{dashboard.communications.length}</strong><small>Storico personale</small></article>
+              <article><span>Articoli</span><strong>{dashboard.products.length}</strong><small>Dal negozio</small></article>
+              <article><span>Consenso</span><strong>{customer.marketing_accettato ? "Attivo" : "Base"}</strong><small>Comunicazioni commerciali</small></article>
+            </section>
+            <section className="ub-customer-dashboard__grid">
+              <article className="ub-customer-panel ub-customer-panel--featured">
+                <span>Ultimo messaggio</span>
+                {latestMessage ? (
+                  <>
+                    <h2>{latestMessage.oggetto}</h2>
+                    <p>{latestMessage.messaggio}</p>
+                    <time>{formatDate(latestMessage.created_at)}</time>
+                  </>
+                ) : (
+                  <>
+                    <h2>Nessun messaggio ancora</h2>
+                    <p>Quando il negozio ti inviera' comunicazioni dedicate le troverai qui.</p>
+                  </>
+                )}
+              </article>
+              <article className="ub-customer-panel">
+                <div className="ub-customer-panel__heading"><span>Profilo</span><h2>I tuoi riferimenti</h2></div>
+                <div className="ub-customer-profile-summary">
+                  <span><strong>Email</strong>{customer.email}</span>
+                  <span><strong>Cellulare</strong>{customer.telefono}</span>
+                  <span><strong>Citta</strong>{customer.citta}</span>
+                  <span><strong>Registrato</strong>{formatDate(customer.created_at)}</span>
+                </div>
+                <button className="ub-customer-secondary-button" onClick={() => setCustomerTab("profile")} type="button">Modifica dati</button>
+              </article>
+            </section>
+          </>
+        )}
 
+        {customerTab === "products" && (
           <section className="ub-customer-panel">
             <div className="ub-customer-panel__heading"><span>Articoli del negozio</span><h2>Catalogo pubblicato</h2></div>
             <div className="ub-customer-product-grid">
@@ -241,7 +370,9 @@ export default function CustomerRegistrationPage() {
               ))}
             </div>
           </section>
+        )}
 
+        {customerTab === "messages" && (
           <section className="ub-customer-panel">
             <div className="ub-customer-panel__heading"><span>Storico comunicazioni</span><h2>Messaggi ricevuti</h2></div>
             <div className="ub-customer-message-list">
@@ -256,7 +387,54 @@ export default function CustomerRegistrationPage() {
               ))}
             </div>
           </section>
-        </section>
+        )}
+
+        {customerTab === "profile" && (
+          <section className="ub-customer-panel">
+            <div className="ub-customer-panel__heading"><span>Gestione profilo</span><h2>I miei dati</h2></div>
+            <form className="ub-customer-profile-form" onSubmit={handleProfileSave}>
+              <div className="ub-customer-form__row">
+                <label>Nome<input defaultValue={customer.nome} name="nome" required /></label>
+                <label>Cognome<input defaultValue={customer.cognome} name="cognome" required /></label>
+              </div>
+              <div className="ub-customer-form__row">
+                <label>Email<input defaultValue={customer.email || ""} name="email" required type="email" /></label>
+                <label>Cellulare<input defaultValue={customer.telefono || ""} inputMode="tel" name="telefono" required /></label>
+              </div>
+              <label>Citta<input defaultValue={customer.citta || ""} name="citta" required /></label>
+              <div className="ub-customer-form__row">
+                <label>Giorno di nascita<select defaultValue={customer.nascita_giorno || ""} name="nascita_giorno"><option value="">Giorno</option>{Array.from({ length: 31 }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></label>
+                <label>Mese di nascita<select defaultValue={customer.nascita_mese || ""} name="nascita_mese"><option value="">Mese</option>{["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"].map((month, index) => <option key={month} value={index + 1}>{month}</option>)}</select></label>
+              </div>
+              <label>Profili social<input defaultValue={customer.profili_social || ""} name="profili_social" /></label>
+              <label>Genere<select defaultValue={customer.genere || ""} name="genere"><option value="">Non indicato</option><option value="uomo">Uomo</option><option value="donna">Donna</option><option value="non_definito">Non definito</option></select></label>
+              <div className="ub-customer-form__row">
+                <label>Taglia seno<input defaultValue={customer.taglia_seno || ""} name="taglia_seno" /></label>
+                <label>Taglia slip<input defaultValue={customer.taglia_slip || ""} name="taglia_slip" /></label>
+              </div>
+              <div className="ub-customer-interests ub-customer-interests--light">
+                <strong>Merceologie di interesse</strong>
+                {INTERESTS.map((interest) => (
+                  <label className="ub-customer-check" key={interest}><input defaultChecked={customer.merceologie_interesse?.includes(interest)} name="merceologie_interesse" type="checkbox" value={interest} /><span>{interest}</span></label>
+                ))}
+              </div>
+              <label className="ub-customer-check ub-customer-check--light"><input defaultChecked={customer.marketing_accettato} name="marketing" type="checkbox" /><span>Desidero ricevere informazioni commerciali dal negozio.</span></label>
+              {profileNotice && <strong className="ub-customer-notice">{profileNotice}</strong>}
+              {profileError && <strong className="ub-customer-error">{profileError}</strong>}
+              <button disabled={profileSaving} type="submit">{profileSaving ? "Salvataggio..." : "Salva modifiche"}</button>
+            </form>
+
+            <section className="ub-customer-danger-zone">
+              <div>
+                <span>Area privacy</span>
+                <h3>Cancellazione dal negozio</h3>
+                <p>Elimina il tuo profilo cliente e interrompe la ricezione di comunicazioni da questo negozio.</p>
+              </div>
+              <label>Scrivi CANCELLA per confermare<input onChange={(event) => setDeleteText(event.target.value)} value={deleteText} /></label>
+              <button disabled={deleting || deleteText.trim().toUpperCase() !== "CANCELLA"} onClick={handleDeleteProfile} type="button">{deleting ? "Cancellazione..." : "Cancella profilo"}</button>
+            </section>
+          </section>
+        )}
       </main>
     );
   }
