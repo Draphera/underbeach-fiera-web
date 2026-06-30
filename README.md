@@ -30,7 +30,7 @@ La configurazione dell'ambiente e dell'infrastruttura e' riservata al team autor
 ## Crediti e diritti
 
 - Servizio ideato da [Underbeach](https://underbeach.eu).
-- Copyright (c) 2026 [Draphera](https://draphera.com). Tutti i diritti riservati.
-- Sviluppato e distribuito da [Pro2Dev](https://pro2dev.online).
+- Sviluppato da [Draphera](https://draphera.com). Tutti i diritti riservati.
+- Distribuito da [Pro2Dev](https://pro2dev.online).
 
 Questo software e' proprietario. Consultare [COPYRIGHT.md](COPYRIGHT.md) per i termini di utilizzo.
