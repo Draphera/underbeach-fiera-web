@@ -24,6 +24,7 @@ import "@/styles/form/form.css";
 import "@/styles/qr/qr.css";
 import "@/styles/store/store.css";
 import "@/styles/customer/customer.css";
+import "@/styles/presentation/presentation.css";
 
 export const metadata = {
   title: "Underbeach Fiera",

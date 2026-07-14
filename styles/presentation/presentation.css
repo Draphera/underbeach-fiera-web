@@ -1,0 +1,122 @@
+.ub-root:has(.ub-presentation-page) .ub-header-invisible { display: none; }
+
+.ub-presentation-page {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: clamp(1rem, 3vw, 1.5rem);
+  min-height: 100vh;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: #071824;
+  color: #fff;
+}
+
+.ub-presentation-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 240px);
+  gap: clamp(1rem, 4vw, 2rem);
+  align-items: end;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: clamp(1rem, 4vw, 2rem);
+  background: linear-gradient(120deg, rgba(7,24,36,.96), rgba(12,48,55,.88));
+}
+
+.ub-presentation-copy {
+  display: grid;
+  gap: .8rem;
+  max-width: 960px;
+}
+
+.ub-presentation-copy > span {
+  color: #f6c27a;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.ub-presentation-copy h1 {
+  margin: 0;
+  max-width: 980px;
+  font-size: clamp(2.2rem, 5vw, 5rem);
+  line-height: .96;
+}
+
+.ub-presentation-copy p {
+  margin: 0;
+  max-width: 720px;
+  color: rgba(255,255,255,.72);
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.5;
+}
+
+.ub-presentation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  margin-top: .4rem;
+}
+
+.ub-presentation-actions a {
+  display: inline-flex;
+  min-height: 2.7rem;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 6px;
+  padding: 0 1rem;
+  background: #f6c27a;
+  color: #0a1a2f;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.ub-presentation-actions a:nth-child(n + 2) {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+
+.ub-presentation-qr {
+  display: grid;
+  gap: .75rem;
+  justify-items: center;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 8px;
+  padding: 1rem;
+  background: rgba(255,255,255,.08);
+  text-align: center;
+}
+
+.ub-presentation-qr img {
+  width: min(180px, 100%);
+  height: auto;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.ub-presentation-qr span {
+  color: rgba(255,255,255,.75);
+  font-size: .78rem;
+  font-weight: 800;
+}
+
+.ub-presentation-video {
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  background: #000;
+  box-shadow: 0 26px 70px rgba(0,0,0,.32);
+}
+
+.ub-presentation-video video {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  background: #000;
+}
+
+@media (max-width: 760px) {
+  .ub-presentation-hero { grid-template-columns: 1fr; }
+  .ub-presentation-qr { justify-items: start; text-align: left; }
+  .ub-presentation-actions a { width: 100%; justify-content: center; }
+}
