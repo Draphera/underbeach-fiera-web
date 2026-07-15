@@ -81,7 +81,7 @@ type CommunicationPayload = {
   message: string;
 };
 
-type StoreView = "overview" | "qr" | "customers" | "communications" | "products";
+type StoreView = "overview" | "qr" | "customers" | "communications" | "products" | "help";
 
 const STORE_SELECT =
   "id, ragione_sociale, partita_iva, indirizzo, cap, citta, provincia, email, telefono_negozio, referente_nome, referente_cognome, referente_cellulare, sito_internet, social, logo_url, attivo, qr_token";
@@ -257,6 +257,51 @@ function QrPanel({ profile }: { profile: StoreProfile }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function HelpPanel() {
+  return (
+    <section className="ub-store-help-panel">
+      <div className="ub-store-section-heading">
+        <div><span className="ub-store-eyebrow">Supporto negozio</span><h2>Guida rapida alla dashboard</h2></div>
+        <a className="ub-store-secondary-button" href="/presentation/tutorial.mp4" target="_blank" rel="noreferrer">Apri video</a>
+      </div>
+      <div className="ub-store-help-layout">
+        <article className="ub-store-help-video">
+          <video controls preload="metadata" playsInline>
+            <source src="/presentation/tutorial.mp4" type="video/mp4" />
+          </video>
+        </article>
+        <aside className="ub-store-help-steps">
+          <span className="ub-store-eyebrow">Primi passi</span>
+          <h3>Da dove iniziare</h3>
+          <ol>
+            <li>Controlla e completa il profilo negozio.</li>
+            <li>Apri il QR personale e usalo per acquisire clienti.</li>
+            <li>Verifica i clienti registrati e i consensi marketing.</li>
+            <li>Carica prodotti e pubblica quelli visibili ai clienti.</li>
+            <li>Usa Comunicazioni per inviti, messaggi singoli o invii globali.</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+  );
+}
+
+function HelpIntroModal({ onClose, onOpenHelp }: { onClose: () => void; onOpenHelp: () => void }) {
+  return (
+    <div className="ub-store-help-modal" role="dialog" aria-modal="true" aria-labelledby="store-help-title">
+      <section>
+        <span className="ub-store-eyebrow">Primo accesso completato</span>
+        <h2 id="store-help-title">Guarda il tutorial della dashboard</h2>
+        <p>La password e' stata aggiornata. Prima di iniziare puoi vedere una guida rapida su profilo, QR, clienti, comunicazioni e prodotti.</p>
+        <div>
+          <button className="ub-store-button" onClick={onOpenHelp} type="button">Vai all'aiuto</button>
+          <button className="ub-store-text-button" onClick={onClose} type="button">Continua alla dashboard</button>
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -545,6 +590,7 @@ export default function StorePortalPage() {
   const [recoverySent, setRecoverySent] = useState(false);
   const [forcePasswordChange, setForcePasswordChange] = useState(false);
   const [editingProfile, setEditingProfile] = useState(false);
+  const [showHelpIntro, setShowHelpIntro] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -812,6 +858,7 @@ export default function StorePortalPage() {
     setSubmitting(true);
     setError(null);
     const currentMetadata = session.user.user_metadata || {};
+    const wasFirstAccess = requiresPasswordChange(session.user);
     const { data, error: updateError } = await supabase.auth.updateUser({
       password: newPassword,
       data: { ...currentMetadata, must_change_password: false },
@@ -826,6 +873,10 @@ export default function StorePortalPage() {
       setNewPassword("");
       setConfirmPassword("");
       setNotice("Password aggiornata. Il tuo accesso e' ora personale e sicuro.");
+      if (wasFirstAccess) {
+        setActiveView("help");
+        setShowHelpIntro(true);
+      }
       if (data.user && !hasStoreRole(data.user)) {
         await supabase.auth.signOut();
       }
@@ -1229,6 +1280,7 @@ export default function StorePortalPage() {
           <button className={activeView === "customers" ? "ub-store-nav ub-store-nav--active" : "ub-store-nav"} onClick={() => setActiveView("customers")} type="button">Clienti</button>
           <button className={activeView === "communications" ? "ub-store-nav ub-store-nav--active" : "ub-store-nav"} onClick={() => setActiveView("communications")} type="button">Comunicazioni</button>
           <button className={activeView === "products" ? "ub-store-nav ub-store-nav--active" : "ub-store-nav"} onClick={() => setActiveView("products")} type="button">Prodotti</button>
+          <button className={activeView === "help" ? "ub-store-nav ub-store-nav--active" : "ub-store-nav"} onClick={() => setActiveView("help")} type="button">Aiuto</button>
         </nav>
         <div className="ub-store-sidebar__footer">
           <small>Account negozio</small>
@@ -1241,6 +1293,15 @@ export default function StorePortalPage() {
       </aside>
 
       <section className="ub-store-main">
+        {showHelpIntro && (
+          <HelpIntroModal
+            onClose={() => setShowHelpIntro(false)}
+            onOpenHelp={() => {
+              setActiveView("help");
+              setShowHelpIntro(false);
+            }}
+          />
+        )}
         <header className="ub-store-topbar">
           <div>
             <span className="ub-store-eyebrow">Area negozio</span>
@@ -1424,6 +1485,7 @@ export default function StorePortalPage() {
             products={products}
           />
         )}
+        {activeView === "help" && <HelpPanel />}
       </section>
     </main>
   );

@@ -1111,6 +1111,74 @@
 .ub-store-customer-row mark { width: fit-content; border-radius: 999px; padding: 0.3rem 0.5rem; background: #eef1f0; color: #6b787d; font-size: 0.68rem; font-weight: 850; }
 .ub-store-customer-row mark.is-yes { background: #e3f5ed; color: #176a49; }
 
+.ub-store-help-panel {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid #dce3e1;
+  border-radius: 8px;
+  padding: clamp(1rem, 3vw, 1.25rem);
+  background: #fff;
+}
+
+.ub-store-help-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.ub-store-help-video {
+  overflow: hidden;
+  border: 1px solid #dce3e1;
+  border-radius: 8px;
+  background: #071824;
+}
+
+.ub-store-help-video video {
+  display: block;
+  width: 100%;
+  max-height: 68vh;
+  background: #071824;
+}
+
+.ub-store-help-steps {
+  display: grid;
+  gap: 0.7rem;
+  border: 1px solid #dce3e1;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #f8faf9;
+}
+
+.ub-store-help-steps h3 { margin: 0; color: #0a1a2f; }
+.ub-store-help-steps ol { display: grid; gap: 0.55rem; margin: 0; padding-left: 1.2rem; color: #506168; font-size: 0.82rem; line-height: 1.45; }
+
+.ub-store-help-modal {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(7, 24, 36, 0.68);
+  backdrop-filter: blur(4px);
+}
+
+.ub-store-help-modal section {
+  display: grid;
+  gap: 0.85rem;
+  width: min(560px, 100%);
+  border: 1px solid #dce3e1;
+  border-radius: 8px;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: #fff;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.28);
+}
+
+.ub-store-help-modal h2 { margin: 0; color: #0a1a2f; font-size: clamp(1.6rem, 4vw, 2.35rem); line-height: 1; }
+.ub-store-help-modal p { margin: 0; color: #5f7178; line-height: 1.55; }
+.ub-store-help-modal div { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+
 @media (max-width: 820px) {
   .ub-store-auth {
     grid-template-columns: 1fr;
@@ -1183,6 +1251,7 @@
   .ub-store-invite-share__actions { grid-column: auto; }
   .ub-store-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ub-store-product-form__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ub-store-help-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
